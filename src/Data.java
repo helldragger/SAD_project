@@ -19,5 +19,18 @@ public class Data {
         
     }
 
+    public void print_server(){
+        System.out.println(
+                "Les serveurs infectés :\n" +infected_servers.get(true)+ "\n" +
+                "Les serveurs non-infectés :\n" +infected_servers.get(false)+ "\n"
+        );
+
+        for(int i = 0; i < this.links.size(); i++){
+            System.out.println(
+                    "\nLe serveur n°" +i+ " est relié aux serveurs " +links.get(i)
+            );
+        }
+    }
+
 
 }
