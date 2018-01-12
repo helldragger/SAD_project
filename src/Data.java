@@ -18,7 +18,7 @@ public class Data {
         this.infected_servers = new HashMap<>();
         
     }
-
+ 
     public void print_server(){
         System.out.println(
                 "Les serveurs infectés :\n" +infected_servers.get(true)+ "\n" +
