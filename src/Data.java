@@ -4,7 +4,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 class Data {
-    //TODO determiner une classe pour les structures de données
     private static ArrayList<Data> maps = new ArrayList<>();
     // Map of links between servers (server to which server)
     private Map<Integer, ArrayList<Integer>> links;
@@ -24,11 +23,19 @@ class Data {
                         "Les serveurs non-infectés :\n" + infected_servers.get(false) + "\n"
         );
 
+        
+	    System.out.println("Maximum of infected interconnected nodes: "
+			    + this.get_max_infected_server_graph_size());
+	    
+	    System.out.println("Maximum of uninfected interconnected nodes: "
+			    + this.get_max_uninfected_server_graph_size());
+        
         for (int i = 0; i < this.links.size(); i++) {
-            System.out.println(
-                    "\nLe serveur n°" + i + " est relié aux serveurs " + links.get(i)
-            );
+	        System.out.println(
+			        "\nLe serveur n°" + i + " est relié aux serveurs " + links.get(i)
+	        );
         }
+        
     }
 
     static void load_maps(){
@@ -132,6 +139,50 @@ class Data {
 	
 	Integer get_servers_count(){
 		return this.links.keySet().size();
+	}
+	
+	Integer get_max_uninfected_server_graph_size(){
+		return subgraph_size((ArrayList<Integer>) this.infected_servers.get(false).clone());
+	}
+	
+	Integer get_max_infected_server_graph_size(){
+		return subgraph_size((ArrayList<Integer>) this.infected_servers.get(true).clone());
+	}
+	
+	Integer subgraph_size(ArrayList<Integer> accepted_servers){
+		if (accepted_servers.size() <= 1)
+			return accepted_servers.size();
+		
+		int max_size = 0;
+		while (accepted_servers.size() > max_size) {
+			
+			int count = 0;
+			
+			ArrayList<Integer> next_servers = new ArrayList<>();
+			next_servers.add(accepted_servers.get(0));
+			accepted_servers.remove(accepted_servers.get(0));
+			
+			while (next_servers.size() != 0) {
+				ArrayList<Integer> temp_nxt = new ArrayList<>();
+				for (Integer server : next_servers) {
+					count++;
+					
+					for (Integer next_server : this.links.get(server))
+						if (accepted_servers.contains(next_server)) {
+							temp_nxt.add(next_server);
+							accepted_servers.remove(server);
+						}
+					
+				}
+				next_servers = temp_nxt;
+			}
+			if (count >= max_size)
+				max_size = count;
+		}
+		return max_size;
+		
+		
+		
 	}
 	
 }

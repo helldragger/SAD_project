@@ -11,14 +11,19 @@ public class Main {
         // show the game
 	    map.print_server();
 	    
+	    
+	    
 	    //TESTS
 	    Random rand = new Random();
 	    //isolate a node
-		Integer server = rand.nextInt(map.get_servers_count());
-		System.out.println("=================== Isolating server no "+server+" ===================");
+		//Integer server = rand.nextInt(map.get_servers_count());
+		Integer server = 9;
+	    System.out.println("=================== Isolating server no "+server+" ===================");
 	    map.cut_links(server, map.get_neighbours(server));
 	    
 	    map.print_server();
+	    
+	    
 	    
     }
 }
