@@ -1,22 +1,24 @@
-import java.lang.reflect.Array;
 import java.util.*;
 
-public class Data {
-    //TODO determiner une classe pour les structures de données
-    static List<Data> maps = new ArrayList<>();
-    // Map of links between servers (server to which server)
-    Map<Integer, List<Integer>> links;
-    // List of servers per state (infected or not)
-    Map<Boolean, List<Integer>> infected_servers;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 
-    public Data() {
+class Data {
+    //TODO determiner une classe pour les structures de données
+    private static ArrayList<Data> maps = new ArrayList<>();
+    // Map of links between servers (server to which server)
+    private Map<Integer, ArrayList<Integer>> links;
+    // List of servers per state (infected or not)
+    private Map<Boolean, ArrayList<Integer>> infected_servers;
+
+    Data() {
 		this.links = new HashMap<>();
 		this.infected_servers = new HashMap<>();
 		this.infected_servers.put(true, new ArrayList<>());
 		this.infected_servers.put(false, new ArrayList<>());
     }
 
-    public void print_server() {
+    void print_server() {
         System.out.println(
                 "Les serveurs infectés :\n" + infected_servers.get(true) + "\n" +
                         "Les serveurs non-infectés :\n" + infected_servers.get(false) + "\n"
@@ -53,35 +55,34 @@ public class Data {
 		    	
 		    	 */
 			
-			    List< Integer > servers = new ArrayList<>();
+			    ArrayList< Integer > servers = new ArrayList<>();
 			    for (int j = 0; j < 15; j++)
 			    {
 			    	servers.add(j);
 			    }
 			    
 		    	map_data.infected_servers.put(false, servers);
-			    
-			    map_data.links.put(0, Arrays.asList(new Integer[]{7}));
-			    map_data.links.put(1, Arrays.asList(new Integer[]{8}));
-			    map_data.links.put(2, Arrays.asList(new Integer[]{3,9}));
-			    map_data.links.put(3, Arrays.asList(new Integer[]{2}));
-			    map_data.links.put(4, Arrays.asList(new Integer[]{5}));
-			    map_data.links.put(5, Arrays.asList(new Integer[]{4,6}));
-			    map_data.links.put(6, Arrays.asList(new Integer[]{5,7}));
-			    map_data.links.put(7, Arrays.asList(new Integer[]{0,6,8}));
-			    map_data.links.put(8, Arrays.asList(new Integer[]{1,7,9}));
-			    map_data.links.put(9, Arrays.asList(new Integer[]{2,8,10,12}));
-			    map_data.links.put(10, Arrays.asList(new Integer[]{9}));
-			    map_data.links.put(11, Arrays.asList(new Integer[]{12}));
-			    map_data.links.put(12, Arrays.asList(new Integer[]{9,11,13,14}));
-			    map_data.links.put(13, Arrays.asList(new Integer[]{12}));
-			    map_data.links.put(14, Arrays.asList(new Integer[]{12}));
+			    map_data.links.put(0, new ArrayList<>(singletonList(7)));
+			    map_data.links.put(1, new ArrayList<>(singletonList(8)));
+			    map_data.links.put(2, new ArrayList<>(asList(3,9)));
+			    map_data.links.put(3, new ArrayList<>(singletonList(2)));
+			    map_data.links.put(4, new ArrayList<>(singletonList(5)));
+			    map_data.links.put(5, new ArrayList<>(asList(4,6)));
+			    map_data.links.put(6, new ArrayList<>(asList(5,7)));
+			    map_data.links.put(7, new ArrayList<>(asList(0,6,8)));
+			    map_data.links.put(8, new ArrayList<>(asList(1,7,9)));
+			    map_data.links.put(9, new ArrayList<>(asList(2,8,10,12)));
+			    map_data.links.put(10, new ArrayList<>(singletonList(9)));
+			    map_data.links.put(11, new ArrayList<>(singletonList(12)));
+			    map_data.links.put(12, new ArrayList<>(asList(9,11,13,14)));
+			    map_data.links.put(13, new ArrayList<>(singletonList(12)));
+			    map_data.links.put(14, new ArrayList<>(singletonList(12)));
 			    // Let's store the map for further testing.
 			    maps.add(map_data);
 		    }
-		    else{
-	    		//TODO read serialized data.
-		    }
+		    
+		    //TODO read serialized data.
+		    
 	    }
     	
     }
@@ -103,10 +104,34 @@ public class Data {
     	this.infected_servers.get(false).remove(server);
     	this.infected_servers.get(true).add(server);
     }
+	
+    void cut_links(Integer server, ArrayList<Integer> linked_servers){
+    	
+    	//cut from the other side
+	    for (Integer s : linked_servers){
+	    	this.links.get(s).remove(server);
+	    }
+	    
+    	// cut from the server side (in this order because remove All empties linked_servers
+    	this.links.get(server).removeAll(linked_servers);
+    	
+    	
+    }
     
+    ArrayList<Integer> get_neighbours(Integer server){
+    	return this.links.get(server);
+    }
     
-    // TODO recuperer des maps
-
-    // TODO
-
+    Map<Integer, ArrayList<Integer>> get_all_links(){
+    	return this.links;
+    }
+    
+	Map<Boolean, ArrayList<Integer>> get_all_servers(){
+    	return this.infected_servers;
+	}
+	
+	Integer get_servers_count(){
+		return this.links.keySet().size();
+	}
+	
 }
