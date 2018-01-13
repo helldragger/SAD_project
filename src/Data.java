@@ -94,15 +94,17 @@ public class Data {
         // determine the infected server
 	    int server_i = rand.nextInt(map.infected_servers.get(false).size());
 	    Integer server = map.infected_servers.get(false).get(server_i);
-	    infect_server(map, server);
+	    map.infect_server(server);
      
 	    return map;
     }
 	
-    static void infect_server(Data data, Integer server){
-    	data.infected_servers.get(false).remove(server);
-    	data.infected_servers.get(true).add(server);
+    void infect_server(Integer server){
+    	this.infected_servers.get(false).remove(server);
+    	this.infected_servers.get(true).add(server);
     }
+    
+    
     // TODO recuperer des maps
 
     // TODO
