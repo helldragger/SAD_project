@@ -26,8 +26,9 @@ public class AI extends Player {
 			
 			Integer target_i = new Random().nextInt(potential_risk.size());
 			Integer server = (Integer) potential_risk.toArray()[target_i];
-			HashSet<Integer> risk_links = game.get_infected_neighbours(server);
-			return new Protecc(server, risk_links);
+			HashSet<Integer> risks_to_cut = game.get_infected_neighbours(server);
+			
+			return new Protecc(server, risks_to_cut);
 		}
 		
 	}

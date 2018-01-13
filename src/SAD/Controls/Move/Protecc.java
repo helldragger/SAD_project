@@ -1,6 +1,5 @@
 package SAD.Controls.Move;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Protecc {

@@ -25,6 +25,8 @@ public class Main {
 	    
 	    map.print_server();
 	    
+	    //TODO Main loop
+	    
 	    
 	    
     }
