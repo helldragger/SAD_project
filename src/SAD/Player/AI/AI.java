@@ -16,7 +16,7 @@ public class AI extends Player {
 		//TODO Add a real AI to determine what to protect or not
 		// for the time being, we will just cut links from a random infected server neighbour
 		
-		HashSet<Integer> potential_risk = game.get_infected_neighbours( game.get_uninfected_servers());
+		HashSet<Integer> potential_risk = game.get_uninfected_neighbours(game.get_infected_servers());
 		// no more infected neighbours connected to the servers?
 		if (potential_risk.isEmpty())
 			return new Protecc();
