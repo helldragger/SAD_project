@@ -1,5 +1,8 @@
 package SAD;
 
+import SAD.Player.AI.AI;
+import SAD.Player.Player;
+
 import java.util.Random;
 
 public class Main {
@@ -9,25 +12,16 @@ public class Main {
     	
     	// generate a random map to play
         Data map = Data.generate_map();
-        
-        // show the game
-	    map.print_server();
-	    
-	    
-	    
-	    //TESTS
-	    Random rand = new Random();
-	    //isolate a node
-		//Integer server = rand.nextInt(map.get_servers_count());
-		Integer server = 9;
-	    System.out.println("=================== Isolating server no "+server+" ===================");
-	    map.cut_links(server, map.get_neighbours(server));
-	    
-	    map.print_server();
-	    
-	    //TODO Main loop
-	    
-	    
+        // generate the players
+	    //TODO menu to choose who have to play, a human or a AI
+        Player atk = new AI();
+        Player def = new AI();
+        //create the game
+        Game game = new Game(atk, def, map);
+        //run the game til the end of it.
+        game.run();
+        //that's it.
+	    //TODO maybe an infinite loop to continue the game or statistics, logs etc?
 	    
     }
 }
