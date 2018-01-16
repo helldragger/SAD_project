@@ -81,7 +81,7 @@ public class Game {
 	
 	protected void sleep() {
 		try {
-			Thread.sleep(500);
+			Thread.sleep(1200);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
