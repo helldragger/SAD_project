@@ -37,7 +37,9 @@ public class GUI {
 						"\n" +
 						"edge{\n" +
 						"    fill-mode: dyn-plain;\n" +
-						"    fill-color: green, red;\n" +
+						"    fill-color: green, orange, red;\n" +
+						"    shape: blob;\n" +
+						"    size: 2px; \n" +
 						"}");
 		graph.addAttribute("ui.quality");
 		graph.addAttribute("ui.antialias");
