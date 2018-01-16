@@ -27,7 +27,7 @@ public class AI extends Player {
 		
 	}
 	
-	public Protecc protecc(Data game){
+	public Protecc protecc(Data game) {
 		
 		//TODO Add a real AI to determine what to protect or not
 		// for the time being, we will just cut links from a random infected server neighbour
@@ -36,9 +36,8 @@ public class AI extends Player {
 		// no more infected neighbours connected to the servers?
 		if (potential_risk.isEmpty())
 			return new Protecc();
-		// risk to mitigate, let's disconnect something randomly!
-		else
-		{
+			// risk to mitigate, let's disconnect something randomly!
+		else {
 			
 			Integer target_i = new Random().nextInt(potential_risk.size());
 			Integer server = (Integer) potential_risk.toArray()[target_i];

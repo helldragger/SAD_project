@@ -7,5 +7,6 @@ import SAD.Data;
 public abstract class Player {
 	
 	public abstract Attacc attacc(Data game);
+	
 	public abstract Protecc protecc(Data game);
 }

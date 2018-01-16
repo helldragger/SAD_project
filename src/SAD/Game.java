@@ -18,37 +18,14 @@ public class Game {
 		this.map = map;
 	}
 	
-	private void next_turn() {
-		Move move;
-		if (this.is_attacker_turn)
-			move = this.attacker.attacc(this.map);
-		else
-			move = this.defender.protecc(this.map);
-		if (move.is_impossible())
-			// The game has ended!
-			this.has_ended = true;
-		else {
-			if (move instanceof Attacc) {
-				map.infect_server(((Attacc) move).get_target());
-				System.out.println("INFECTION OF COMPUTER "+((Attacc) move).get_target());
-			}
-			else {
-				map.cut_links(((Protecc) move).get_server(),
-						((Protecc) move).get_links());
-				System.out.println("ISOLATING SERVER "+ ((Protecc) move).get_server() + " FROM SERVERS "+((Protecc) move).get_links());
-			}
-		}
-		is_attacker_turn = !is_attacker_turn;
-	}
-	
-	public void run(){
+	public void run() {
 		//present the board.
 		SAD.io.Out.print_servers(this.map);
 		//let's rumbleeeeee
 		game_loop();
 		
 		//TODO implement a result screen for the attacker and the defender
-
+		
 		Integer infected_servers = this.map.get_infected_servers().size();
 		Integer uninfected_servers = this.map.get_uninfected_servers().size();
 		Integer infected_net = this.map.get_max_infected_server_graph_size();
@@ -77,6 +54,29 @@ public class Game {
 			sleep();
 		}
 		
+	}
+	
+	private void next_turn() {
+		Move move;
+		if (this.is_attacker_turn)
+			move = this.attacker.attacc(this.map);
+		else
+			move = this.defender.protecc(this.map);
+		if (move.is_impossible())
+			// The game has ended!
+			this.has_ended = true;
+		else {
+			if (move instanceof Attacc) {
+				map.infect_server(((Attacc) move).get_target());
+				System.out.println("INFECTION OF COMPUTER " + ((Attacc) move).get_target());
+			}
+			else {
+				map.cut_links(((Protecc) move).get_server(),
+						((Protecc) move).get_links());
+				System.out.println("ISOLATING SERVER " + ((Protecc) move).get_server() + " FROM SERVERS " + ((Protecc) move).get_links());
+			}
+		}
+		is_attacker_turn = !is_attacker_turn;
 	}
 	
 	protected void sleep() {

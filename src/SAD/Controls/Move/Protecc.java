@@ -2,7 +2,7 @@ package SAD.Controls.Move;
 
 import java.util.TreeSet;
 
-public class Protecc extends Move{
+public class Protecc extends Move {
 	
 	final Integer server;
 	final TreeSet<Integer> links_to_cut;
@@ -24,7 +24,7 @@ public class Protecc extends Move{
 		return this.links_to_cut;
 	}
 	
-	public boolean is_impossible(){
+	public boolean is_impossible() {
 		return (this.server == -1);
 	}
 }
