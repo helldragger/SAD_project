@@ -41,20 +41,9 @@ public class Game {
 		is_attacker_turn = !is_attacker_turn;
 	}
 	
-	private void game_loop() {
-		while (!this.has_ended)
-		{
-			//TODO implement a real interface
-			next_turn();
-			this.map.print_server();
-			
-		}
-		
-	}
-	
 	public void run(){
 		//present the board.
-		this.map.print_server();
+		SAD.io.Out.print_servers(this.map);
 		//let's rumbleeeeee
 		game_loop();
 		
@@ -79,5 +68,23 @@ public class Game {
 			System.out.println("\tNot too bad Defender! You managed to avoid taking too much damage!");
 		else
 			System.out.println("\tWow Defender! You got rekted!");
+	}
+	
+	private void game_loop() {
+		while (!this.has_ended) {
+			next_turn();
+			SAD.io.Out.print_servers(this.map);
+			sleep();
+		}
+		
+	}
+	
+	protected void sleep() {
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return;
 	}
 }

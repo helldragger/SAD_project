@@ -3,13 +3,13 @@ package SAD;
 import SAD.Player.AI.AI;
 import SAD.Player.Player;
 
-import java.util.Random;
-
 public class Main {
     public static void main(String[] args){
     	// Load maps into memory
     	Data.load_maps();
-    	
+	    // Prepare the Graphical UI
+	    
+	    
     	// generate a random map to play
         Data map = Data.generate_map();
         // generate the players
