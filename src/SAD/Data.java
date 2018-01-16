@@ -24,11 +24,13 @@ public class Data {
 	static void load_maps() {
 		//TODO load maps
 		// TODO determine the number of maps
-		int map_n = 1;
+		Random rand = new Random();
+		Double link_probability = 0.0005;
+		int map_n = 2;
 		for (int i = 0; i < map_n; i++) {
 			Data map_data = new Data();
 			// TODO load from a file or something easily modifiable
-			if (i == 0) {
+			if (i == 3) {
 				// while waiting for it, there is a little TESTING map with all type of situations included
 				// ie.: 1 to 2 link, 1 to 3, 1 to 4, 2 to 2 etc...
 			
@@ -66,6 +68,27 @@ public class Data {
 				map_data.links.put(13, new TreeSet<>(singletonList(12)));
 				map_data.links.put(14, new TreeSet<>(singletonList(12)));
 				// Let's store the map for further testing.
+				maps.add(map_data);
+			}
+			else {
+				TreeSet<Integer> servers = new TreeSet<>();
+				for (int j = 0; j < 500; j++) {
+					servers.add(j);
+					map_data.links.put(j, new TreeSet<>());
+				}
+				
+				map_data.infected_servers.put(false, servers);
+				
+				for (Integer s : servers) {
+					for (Integer s2 : servers) {
+						if (s != s2)
+							if (!map_data.links.get(s).contains(s2))
+								if (rand.nextDouble() <= link_probability) {
+									map_data.links.get(s).add(s2);
+									map_data.links.get(s2).add(s);
+								}
+					}
+				}
 				maps.add(map_data);
 			}
 			
