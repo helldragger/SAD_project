@@ -106,7 +106,7 @@ public class Data {
 		for (int server = 0; server < server_quantity; server++)
 		// To get a somewhat random link distribution we will pick the other linked server at random.
 		{
-			for (int attempt = 0; attempt < max_link_per_server; attempt++)
+			for (int attempt = map_data.links.get(server).size(); attempt < max_link_per_server; attempt++)
 			// if we do have to create a link, we will accept it only if the other server does accept any more connexions
 			//it avoids doing a risky infinite loop and helps speeding up the process
 			{
@@ -114,7 +114,7 @@ public class Data {
 				//we pick a random server.
 				{
 					Integer target = rand.nextInt(server_quantity);
-					if (map_data.get_neighbours(target).size() != max_link_per_server & server != target)
+					if (map_data.get_neighbours(target).size() < max_link_per_server & server != target)
 						map_data.create_link(server, target);
 				}
 			}

@@ -13,9 +13,9 @@ public class Game {
 	private final Player attacker;
 	private final Player defender;
 	public Data map;
-	private Boolean is_attacker_turn = true;
-	private Boolean has_ended = false;
-	private Boolean is_simulated = false;
+	public Boolean is_attacker_turn = true;
+	public Boolean has_ended = false;
+	public Boolean is_simulated = false;
 	
 	public Game(final Player attacker, final Player defender, final int server_qty, final int probability, final int max_links, final GameSpeed speed) {
 		this.attacker = attacker;
@@ -29,6 +29,14 @@ public class Game {
 		this.defender = defender;
 		this.map = Data.load_predefined_map(preset);
 		game_speed = speed;
+	}
+	
+	public void start_simulation() {
+		is_simulated = true;
+	}
+	
+	public void stop_simulation() {
+		is_simulated = false;
 	}
 	
 	public void run() {
