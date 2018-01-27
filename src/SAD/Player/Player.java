@@ -2,11 +2,11 @@ package SAD.Player;
 
 import SAD.Controls.Move.Attacc;
 import SAD.Controls.Move.Protecc;
-import SAD.Data;
+import SAD.Game.Game;
 
 public abstract class Player {
 	
-	public abstract Attacc attacc(Data game);
+	public abstract Attacc attacc(Game game);
 	
-	public abstract Protecc protecc(Data game);
+	public abstract Protecc protecc(Game game);
 }
