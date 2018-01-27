@@ -1,18 +1,17 @@
-package SAD;
-
-import SAD.GUI.GUI;
+package SAD.Game;
 
 import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
+
 public class Data {
-	private static ArrayList<Data> maps = new ArrayList<>();
-	// Map of links between servers (server to which server)
+	// Game of links between servers (server to which server)
 	private Map<Integer, TreeSet<Integer>> links;
 	// List of servers per state (infected or not)
 	private Map<Boolean, TreeSet<Integer>> infected_servers;
+	
 	
 	public Data() {
 		this.links = new HashMap<>();
@@ -21,16 +20,19 @@ public class Data {
 		this.infected_servers.put(false, new TreeSet<>());
 	}
 	
-	static void load_maps() {
+	static Data load_predefined_map(Integer index) {
+		Data map_data = new Data();
+		Random rand = new Random();
+		
+		int server_quantity;
 		//TODO load maps
 		// TODO determine the number of maps
-		Random rand = new Random();
-		Double link_probability = 0.0005;
-		int map_n = 2;
-		for (int i = 0; i < map_n; i++) {
-			Data map_data = new Data();
-			// TODO load from a file or something easily modifiable
-			if (i == 3) {
+		// TODO load from a file or something easily modifiable
+		//TODO read serialized data.
+		
+		
+		switch (index) {
+			case 1:
 				// while waiting for it, there is a little TESTING map with all type of situations included
 				// ie.: 1 to 2 link, 1 to 3, 1 to 4, 2 to 2 etc...
 			
@@ -45,6 +47,7 @@ public class Data {
 		    	              14
 		    	
 		    	 */
+				server_quantity = 15;
 				
 				TreeSet<Integer> servers = new TreeSet<>();
 				for (int j = 0; j < 15; j++) {
@@ -67,81 +70,65 @@ public class Data {
 				map_data.links.put(12, new TreeSet<>(asList(9, 11, 13, 14)));
 				map_data.links.put(13, new TreeSet<>(singletonList(12)));
 				map_data.links.put(14, new TreeSet<>(singletonList(12)));
-				// Let's store the map for further testing.
-				maps.add(map_data);
-			}
-			else {
-				TreeSet<Integer> servers = new TreeSet<>();
-				for (int j = 0; j < 500; j++) {
-					servers.add(j);
-					map_data.links.put(j, new TreeSet<>());
-				}
-				
-				map_data.infected_servers.put(false, servers);
-				
-				for (Integer s : servers) {
-					for (Integer s2 : servers) {
-						if (s != s2)
-							if (!map_data.links.get(s).contains(s2))
-								if (rand.nextDouble() <= link_probability) {
-									map_data.links.get(s).add(s2);
-									map_data.links.get(s2).add(s);
-								}
-					}
-				}
-				maps.add(map_data);
-			}
-			
-			//TODO read serialized data.
-			
+				break;
+			default:
+				throw new NoSuchElementException();
 		}
 		
+		map_data.infect_server(rand.nextInt(server_quantity));
+		
+		
+		return map_data;
 	}
 	
-	static Data generate_map() {
-		Random rand = new Random();
-		// Use already planned maps.
-		// 1 map au pif parmi celles chargées
-		Data map = maps.get(rand.nextInt(maps.size()));
-		// determine the infected server
-		int server_i = rand.nextInt(map.infected_servers.get(false).size());
-		
-		Integer server = (Integer) map.infected_servers.get(false).toArray()[server_i];
-		GUI.load_graph(map);
-		map.infect_server(server);
-		
-		return map;
-	}
-	
-	void infect_server(Integer server) {
-		GUI.infect_node(server, this.get_neighbours(server));
+	public void infect_server(Integer server) {
 		this.infected_servers.get(false).remove(server);
 		this.infected_servers.get(true).add(server);
 	}
 	
-	public TreeSet<Integer> get_neighbours(Integer server) {
-		return (TreeSet<Integer>) this.links.get(server).clone();
-	}
-	
-	public void print_server() {
-		System.out.println(
-				"Les serveurs infectés :\n" + infected_servers.get(true) + "\n" +
-						"Les serveurs non-infectés :\n" + infected_servers.get(false) + "\n"
-		);
+	static Data load_random_map(Integer server_quantity, Integer link_probability, Integer max_link_per_server) {
 		
+		Random rand = new Random();
+		Data map_data = new Data();
 		
-		System.out.println("Maximum of infected interconnected nodes: "
-				+ this.get_max_infected_server_graph_size());
+		//server spawning
 		
-		System.out.println("Maximum of uninfected interconnected nodes: "
-				+ this.get_max_uninfected_server_graph_size());
-		
-		for (int i = 0; i < this.links.size(); i++) {
-			System.out.println(
-					"\nLe serveur n°" + i + " est relié aux serveurs " + links.get(i)
-			);
+		TreeSet<Integer> servers = new TreeSet<>();
+		for (int s = 0; s < server_quantity; s++) {
+			servers.add(s);
+			map_data.links.put(s, new TreeSet<>());
 		}
 		
+		map_data.infected_servers.put(false, servers);
+		
+		//linking servers
+		
+		for (int server = 0; server < server_quantity; server++)
+		// To get a somewhat random link distribution we will pick the other linked server at random.
+		{
+			for (int attempt = 0; attempt < max_link_per_server; attempt++)
+			// if we do have to create a link, we will accept it only if the other server does accept any more connexions
+			//it avoids doing a risky infinite loop and helps speeding up the process
+			{
+				if (rand.nextInt() <= link_probability)
+				//we pick a random server.
+				{
+					Integer target = rand.nextInt(server_quantity);
+					if (map_data.get_neighbours(target).size() != max_link_per_server & server != target)
+						map_data.create_link(server, target);
+				}
+			}
+		}
+		
+		//patient zero
+		map_data.infect_server(rand.nextInt(server_quantity));
+		
+		//ready!
+		return map_data;
+	}
+	
+	public TreeSet<Integer> get_neighbours(Integer server) {
+		return (TreeSet<Integer>) this.links.get(server).clone();
 	}
 	
 	public Integer get_max_infected_server_graph_size() {
@@ -191,17 +178,9 @@ public class Data {
 		
 	}
 	
-	void cut_links(Integer server, TreeSet<Integer> linked_servers) {
-		GUI.cut_links(server, linked_servers);
-		//cut from the other side
-		for (Integer s : linked_servers) {
-			this.links.get(s).remove(server);
-		}
-		
-		// cut from the server side (in this order because remove All empties linked_servers
-		this.links.get(server).removeAll(linked_servers);
-		
-		
+	private void create_link(Integer s1, Integer s2) {
+		this.links.get(s1).add(s2);
+		this.links.get(s2).add(s1);
 	}
 	
 	public TreeSet<Integer> get_uninfected_neighbours(Integer server) {
@@ -228,12 +207,16 @@ public class Data {
 		}});
 	}
 	
-	TreeSet<Integer> get_neighbours(TreeSet<Integer> servers) {
-		TreeSet<Integer> neighbours = new TreeSet<>();
-		for (Integer server : servers) {
-			neighbours.addAll(get_neighbours(server));
+	public void cut_links(Integer server, TreeSet<Integer> linked_servers) {
+		//cut from the other side
+		for (Integer s : linked_servers) {
+			this.links.get(s).remove(server);
 		}
-		return neighbours;
+		
+		// cut from the server side (in this order because remove All empties linked_servers
+		this.links.get(server).removeAll(linked_servers);
+		
+		
 	}
 	
 	public Map<Integer, TreeSet<Integer>> get_all_links() {
@@ -257,5 +240,13 @@ public class Data {
 	
 	public TreeSet<Integer> get_uninfected_servers() {
 		return (TreeSet<Integer>) this.infected_servers.get(false).clone();
+	}
+	
+	public TreeSet<Integer> get_neighbours(TreeSet<Integer> servers) {
+		TreeSet<Integer> neighbours = new TreeSet<>();
+		for (Integer server : servers) {
+			neighbours.addAll(get_neighbours(server));
+		}
+		return neighbours;
 	}
 }

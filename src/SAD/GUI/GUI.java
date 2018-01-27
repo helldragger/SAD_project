@@ -1,6 +1,6 @@
 package SAD.GUI;
 
-import SAD.Data;
+import SAD.Game.Game;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
@@ -12,7 +12,7 @@ public class GUI {
 	static Graph graph = new SingleGraph("Game");
 	;
 	
-	static public void load_graph(Data map) {
+	static public void load_graph(Game game) {
 		graph.clear();
 		graph.setStrict(false);
 		graph.setAutoCreate(false);
@@ -46,21 +46,30 @@ public class GUI {
 		graph.display();
 		
 		//loading nodes
-		for (Integer server : map.get_all_servers()) {
+		for (Integer server : game.map.get_all_servers()) {
 			Node n = graph.addNode(String.valueOf(server));
 			n.addAttribute("ui.label", n.getId());
 		}
 		//loading edges
-		for (Integer server : map.get_all_servers()) {
-			for (Integer neighbour : map.get_neighbours(server)) {
+		for (Integer server : game.map.get_all_servers()) {
+			for (Integer neighbour : game.map.get_neighbours(server)) {
 				Edge e = graph.addEdge(String.valueOf(server) + '-' + String.valueOf(neighbour), String.valueOf(server), String.valueOf(neighbour));
 				if (e != null) e.addAttribute("ui.color", 0.0);
 			}
 		}
+		
+		//loading the patient zero
+		infect_node(game.map.get_infected_servers());
 		//TADAAAA
 	}
 	
-	static public void infect_node(Integer server, TreeSet<Integer> linked_servers) {
+	static private void infect_node(TreeSet<Integer> servers) {
+		for (Integer s : servers) {
+			infect_node(s);
+		}
+	}
+	
+	static public void infect_node(Integer server) {
 		Node n = graph.getNode(String.valueOf(server));
 		n.addAttribute("ui.class", "infected");
 		for (Edge e : n.getEdgeSet()) {

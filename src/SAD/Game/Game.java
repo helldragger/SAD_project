@@ -1,26 +1,40 @@
-package SAD;
+package SAD.Game;
 
 import SAD.Controls.Move.Attacc;
 import SAD.Controls.Move.Move;
 import SAD.Controls.Move.Protecc;
+import SAD.GUI.GUI;
 import SAD.Player.Player;
 
+import java.util.TreeSet;
+
 public class Game {
+	private static GameSpeed game_speed = GameSpeed.NORMAL;
 	private final Player attacker;
 	private final Player defender;
-	private Data map;
+	public Data map;
 	private Boolean is_attacker_turn = true;
 	private Boolean has_ended = false;
+	private Boolean is_simulated = false;
 	
-	public Game(final Player attacker, final Player defender, final Data map) {
+	public Game(final Player attacker, final Player defender, final int server_qty, final int probability, final int max_links, final GameSpeed speed) {
 		this.attacker = attacker;
 		this.defender = defender;
-		this.map = map;
+		this.map = Data.load_random_map(server_qty, probability, max_links);
+		game_speed = speed;
+	}
+	
+	public Game(final Player attacker, final Player defender, final int preset, final GameSpeed speed) {
+		this.attacker = attacker;
+		this.defender = defender;
+		this.map = Data.load_predefined_map(preset);
+		game_speed = speed;
 	}
 	
 	public void run() {
 		//present the board.
 		SAD.io.Out.print_servers(this.map);
+		
 		//let's rumbleeeeee
 		game_loop();
 		
@@ -35,8 +49,10 @@ public class Game {
 		System.out.println("=========== END OF THE GAME ============\n\n");
 		if (uninfected_servers == 0)
 			System.out.println("\tThe attacker just destroyed the game!");
-		else if (infected_servers <= 1)
+		else if (infected_servers < 1)
 			System.out.println("\tWait, what? You're not supposed to convert infected servers?!");
+		else if (infected_servers == 1)
+			System.out.println("\tOuch, what a burn Attacker, I can even feel the heat!");
 		else if (infected_servers == 3)
 			System.out.println("\t2+2 is 4, minus 1 that's 3, quick infection!");
 		else if (infected_net == uninfected_net)
@@ -50,8 +66,11 @@ public class Game {
 	private void game_loop() {
 		while (!this.has_ended) {
 			next_turn();
-			SAD.io.Out.print_servers(this.map);
-			sleep();
+			if (!this.is_simulated) {
+				SAD.io.Out.print_servers(this.map);
+				sleep();
+			}
+			
 		}
 		
 	}
@@ -59,21 +78,36 @@ public class Game {
 	private void next_turn() {
 		Move move;
 		if (this.is_attacker_turn)
-			move = this.attacker.attacc(this.map);
+			move = this.attacker.attacc(this);
 		else
-			move = this.defender.protecc(this.map);
+			move = this.defender.protecc(this);
 		if (move.is_impossible())
 			// The game has ended!
 			this.has_ended = true;
+		
+		
 		else {
 			if (move instanceof Attacc) {
-				map.infect_server(((Attacc) move).get_target());
-				System.out.println("INFECTION OF COMPUTER " + ((Attacc) move).get_target());
+				
+				final Integer target = ((Attacc) move).get_target();
+				
+				if (!this.is_simulated) {
+					GUI.infect_node(target);
+					System.out.println("INFECTION OF COMPUTER " + target);
+				}
+				
+				map.infect_server(target);
 			}
 			else {
-				map.cut_links(((Protecc) move).get_server(),
-						((Protecc) move).get_links());
-				System.out.println("ISOLATING SERVER " + ((Protecc) move).get_server() + " FROM SERVERS " + ((Protecc) move).get_links());
+				final Integer server = ((Protecc) move).get_server();
+				final TreeSet<Integer> neighbours = ((Protecc) move).get_links();
+				
+				if (!this.is_simulated) {
+					GUI.cut_links(server, neighbours);
+					System.out.println("ISOLATING SERVER " + server + " FROM SERVERS " + neighbours);
+				}
+				
+				map.cut_links(server, neighbours);
 			}
 		}
 		is_attacker_turn = !is_attacker_turn;
@@ -81,10 +115,11 @@ public class Game {
 	
 	protected void sleep() {
 		try {
-			Thread.sleep(50);
+			Thread.sleep(game_speed.step_duration);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		return;
 	}
 }
+
