@@ -1,6 +1,6 @@
 package SAD.io;
 
-import SAD.Data;
+import SAD.Game.Data;
 
 import java.util.TreeSet;
 
