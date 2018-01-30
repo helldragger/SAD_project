@@ -2,14 +2,53 @@ package SAD.Player.AI;
 
 
 import SAD.Controls.Move.Attacc;
+import SAD.Controls.Move.Move;
 import SAD.Controls.Move.Protecc;
 import SAD.Data;
+import SAD.Game;
 import SAD.Player.Player;
+import SAD.io.In;
 
 import java.util.Random;
 import java.util.TreeSet;
 
 public class AI extends Player {
+
+	private static Integer getValue(Game s){
+		if(s.is_attacker_turn){ //if Player is Attacc
+			return s.map.get_max_infected_server_graph_size();
+		}else{
+			return s.map.get_max_uninfected_server_graph_size();
+		}
+	}
+
+	public static MinmaxResult minmax(Game s, Integer d){
+		if(d ==0 || s.has_ended){
+			return new MinmaxResult(getValue(s), null);
+		}
+		MinmaxResult m = new MinmaxResult(0, null);
+		if(s.is_attacker_turn){ //if Player is Attacc
+			for(Integer target : s.map.get_uninfected_neighbours(s.map.get_infected_servers())){
+				Attacc c = new Attacc(target);
+				s.map.infect_server(target);
+				MinmaxResult result = minmax(s,d-1);
+				if(m.max < result.max){
+					m = result;
+				}
+			}
+		}else{
+			for(Integer servor : s.map.get_uninfected_servers()){
+				TreeSet<Integer> voisins = s.map.get_neighbours(servor);
+
+
+
+				if( > ){
+
+				}
+			}
+		}
+	}
+
 	public Attacc attacc(Data game) {
 		//TODO Add a real attack decision
 		// For the time being we just attack a random neighbor until we can't
@@ -47,5 +86,16 @@ public class AI extends Player {
 		}
 		
 	}
-	
+
+
+
+	static class MinmaxResult{
+		public Integer max;
+		public Move etat;
+
+		public MinmaxResult(Integer m, Move e){
+			max = m;
+			etat = e;
+		}
+	}
 }
