@@ -7,17 +7,17 @@ import SAD.Player.AI.AI;
 import SAD.Player.Player;
 
 public class Main {
-	public static void main(String[] args) {
-		// Load maps into memory
+    public static void main(String[] args) throws InterruptedException {
+        // Load maps into memory
 		// Prepare the Graphical UI
 		
 		boolean randomness = true;
 		int preset = 1;
-		int server_qty = 20;
-		int probability = 5;
-		int max_link = 3;
-		
-		// generate a random map to play
+        int server_qty = 50;
+        int probability = 5;
+        int max_link = 5;
+
+        // generate a random map to play
 		// generate the players
 		//TODO menu to choose who have to play, a human or a AI
 		Player atk = new AI();
@@ -26,11 +26,14 @@ public class Main {
 		//preset choice:
 //		Game game = new Game(atk, def, preset);
 		//random choice:
-		Game game = new Game(atk, def, server_qty, probability, max_link, GameSpeed.SLOW);
-		
-		
-		//initialize the GUI
+        Game game = new Game(atk, def, server_qty, probability, max_link,
+                GameSpeed.NORMAL);
+
+
+        //initialize the GUI
 		GUI.load_graph(game);
+        Thread.sleep(1500);
+
 		//run the game til the end of it.
 		game.run();
 		//that's it.

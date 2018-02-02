@@ -10,8 +10,8 @@ import java.util.TreeSet;
 
 public class GUI {
 	static Graph graph = new SingleGraph("Game");
-	;
-	
+
+
 	static public void load_graph(Game game) {
 		graph.clear();
 		graph.setStrict(false);
