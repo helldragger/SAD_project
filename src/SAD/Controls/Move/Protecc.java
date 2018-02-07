@@ -1,17 +1,17 @@
 package SAD.Controls.Move;
 
-import java.util.TreeSet;
+import java.util.Set;
 
 public class Protecc extends Move {
 	
 	final Integer server;
-	final TreeSet<Integer> links_to_cut;
+	final Set<Integer> links_to_cut;
 	
 	public Protecc() {
 		this(-1, null);
 	}
 	
-	public Protecc(final Integer server, final TreeSet<Integer> links) {
+	public Protecc(final Integer server, final Set<Integer> links) {
 		this.server = server;
 		this.links_to_cut = links;
 	}
@@ -20,7 +20,7 @@ public class Protecc extends Move {
 		return this.server;
 	}
 	
-	public TreeSet<Integer> get_links() {
+	public Set<Integer> get_links() {
 		return this.links_to_cut;
 	}
 	

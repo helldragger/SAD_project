@@ -4,17 +4,21 @@ package SAD.Player.AI;
 import SAD.Controls.Move.Attacc;
 import SAD.Controls.Move.Move;
 import SAD.Controls.Move.Protecc;
-import SAD.Data;
-import SAD.Game;
+import SAD.Game.Game;
 import SAD.Player.Player;
-import SAD.io.In;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeSet;
+
+import static SAD.Controls.Move.Move.get_all_protecc;
 
 public class AI extends Player {
 
-	private static Integer getValue(Game s){
+	private int depth = 3;
+
+	private static Integer getValue(final Game s){
 		if(s.is_attacker_turn){ //if Player is Attacc
 			return s.map.get_max_infected_server_graph_size();
 		}else{
@@ -22,38 +26,43 @@ public class AI extends Player {
 		}
 	}
 
-	public static MinmaxResult minmax(Game s, Integer d){
+	public static MinmaxResult minmax(final Game s, final Integer d){
 		if(d ==0 || s.has_ended){
 			return new MinmaxResult(getValue(s), null);
 		}
 		MinmaxResult m = new MinmaxResult(0, null);
-		if(s.is_attacker_turn){ //if Player is Attacc
-			for(Integer target : s.map.get_uninfected_neighbours(s.map.get_infected_servers())){
-				Attacc c = new Attacc(target);
-				s.map.infect_server(target);
-				MinmaxResult result = minmax(s,d-1);
-				if(m.max < result.max){
-					m = result;
-				}
-			}
-		}else{
-			for(Integer servor : s.map.get_uninfected_servers()){
-				TreeSet<Integer> voisins = s.map.get_neighbours(servor);
 
+		Set<Move> moves;
+		if (s.is_attacker_turn)
+			moves = Move.get_all_attacc(s);
+		else
+			moves = Move.get_all_protecc(s);
 
-
-				if( > ){
-
-				}
+		for(Move move : moves)
+		{
+			Game temp = s.clone();
+			temp.play_move(move);
+			MinmaxResult result = minmax(temp,d-1);
+			if(m.max < result.max){
+				m.max = result.max;
+				m.move = move;
 			}
 		}
+
+		return m;
 	}
 
-	public Attacc attacc(Data game) {
+	public Attacc attacc(final Game game) {
+		game.start_simulation();
+		Attacc move = (Attacc) minmax(game.clone(), depth).move;
+		game.stop_simulation();
+		return (move != null)? move : new Attacc();
+		/*
 		//TODO Add a real attack decision
+
 		// For the time being we just attack a random neighbor until we can't
 		
-		TreeSet<Integer> potential_target = game.get_uninfected_neighbours(game.get_infected_servers());
+		Set<Integer> potential_target = game.map.get_uninfected_neighbours(game.map.get_infected_servers());
 		// no targets to infect anymore
 		if (potential_target.isEmpty())
 			return new Attacc();
@@ -63,15 +72,21 @@ public class AI extends Player {
 			return new Attacc((Integer) potential_target.toArray()[target_i]);
 			
 		}
+		*/
 		
 	}
 	
-	public Protecc protecc(Data game) {
-		
+	public Protecc protecc(final Game game) {
+		game.start_simulation();
+		Protecc move = (Protecc) minmax(game.clone(), depth).move;
+		game.stop_simulation();
+		return (move != null)? move: new Protecc();
+
+		/*
 		//TODO Add a real AI to determine what to protect or not
 		// for the time being, we will just cut links from a random infected server neighbour
 		
-		TreeSet<Integer> potential_risk = game.get_uninfected_neighbours(game.get_infected_servers());
+		Set<Integer> potential_risk = game.map.get_uninfected_neighbours(game.map.get_infected_servers());
 		// no more infected neighbours connected to the servers?
 		if (potential_risk.isEmpty())
 			return new Protecc();
@@ -80,22 +95,21 @@ public class AI extends Player {
 			
 			Integer target_i = new Random().nextInt(potential_risk.size());
 			Integer server = (Integer) potential_risk.toArray()[target_i];
-			TreeSet<Integer> risks_to_cut = game.get_infected_neighbours(server);
+			Set<Integer> risks_to_cut = game.map.get_infected_neighbours(server);
 			
 			return new Protecc(server, risks_to_cut);
-		}
+		}*/
 		
 	}
 
 
-
 	static class MinmaxResult{
 		public Integer max;
-		public Move etat;
+		public Move move;
 
 		public MinmaxResult(Integer m, Move e){
 			max = m;
-			etat = e;
+			move = e;
 		}
 	}
 }

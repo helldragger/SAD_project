@@ -6,6 +6,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 
+import java.util.Set;
 import java.util.TreeSet;
 
 public class GUI {
@@ -63,7 +64,7 @@ public class GUI {
 		//TADAAAA
 	}
 	
-	static private void infect_node(TreeSet<Integer> servers) {
+	static private void infect_node(Set<Integer> servers) {
 		for (Integer s : servers) {
 			infect_node(s);
 		}
@@ -78,7 +79,7 @@ public class GUI {
 		}
 	}
 	
-	static public void cut_links(Integer server, TreeSet<Integer> linked_servers) {
+	static public void cut_links(Integer server, Set<Integer> linked_servers) {
 		for (Integer s : linked_servers) {
 			graph.removeEdge(String.valueOf(server) + '-' + String.valueOf(s));
 			graph.removeEdge(String.valueOf(s) + '-' + String.valueOf(server));
