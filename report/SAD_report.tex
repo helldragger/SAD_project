@@ -1,0 +1,165 @@
+\documentclass{scratcl}
+
+
+\usepackage[utf8]{inputenc}
+
+\publisher{RAPPORT DE PROJET}
+\subtitle{2ème année de licence d'informatique}
+\title{SAD PROJECT}
+\author{PINOT Morine \& JACQUIOT Christopher}
+
+\begin{document}
+    \maketitle
+    \tableofcontents
+
+    \section{Introduction}
+
+    \paragraph{Quel est ce projet?}
+
+
+
+    \part{Fonctionnalités de base}
+
+    \section{Gestion de la partie - Structure des données du jeu}
+
+    \subsection{Nécessités}
+
+    \paragraph{}
+
+    \subsection{Problème}
+
+    \subsection{Approches possibles}
+
+    \subsection{Approche utilisée}
+
+    \subsection{Remarques sur les résultats obtenus}
+
+    \subsection{Pistes d'amélioration}
+
+
+
+    Simulation mode
+    Affichage du jeu
+    Generation de map
+    Heuristique de l'IA
+    Algorithme de l'IA
+
+
+
+    \section{Gestion de la partie - Simulation des mouvements}
+
+    \subsection{Nécessités}
+
+    \paragraph{Gestion des parties simulable}
+    Afin de pouvoir utiliser pleinement notre algorithme min max pour
+    l'intelligence artificielle prévue, nous allons avoir besoin de diminuer
+    un maximum l'impact d'un tour de jeu en temps de calcul pour laisser plus
+    de temps au calcul du meilleur mouvement.
+
+    \subsection{Problème}
+
+    \paragraph{L'utilisateur doit pouvoir comprendre ce qu'il se passe}
+    Avoir un tour de jeu quasi instantané est gênant quand il s'agit de
+    laisser l'utilisateur avoir une vision claire de ce qu'il se passe.
+    Nous avons donc besoin d'un temps d'affichage entre chaque mouvement pour
+    permettre au joueur de cocmprendre le deroulement de la partie, tout en
+    laissant l'IA aller aussi vite que possible pour que sa recherche de
+    mouvement soit la plus efficace et rapide possible.
+
+    Comment allier vitesse d'execution et comprehensibilité du jeu pour
+    l'utilisateur?
+
+    \subsection{Approches possibles}
+
+    \paragraph{Deux gestion de parties séparées}
+    Nous pourrions avoir deux types d'objet Game séparés, l'un
+    spécialement dédié a la simulation et optimisé autant que possible en
+    vitesse d'execution, a coté d'un autre objet Game qui contiendrait
+    l'interface utilisateur, ainsi que les temps de latence nécessaires entre
+    chaque tour.
+    Cette solution nécesiterais de faire de la duplication de
+    code et ne serait pas optimale niveau maintenance, de plus les
+    optimisations de l'un qui pourrait s'appliquer à l'autre pourraient
+    passer inapercues..
+
+    \paragraph{Mode de simulation intégré}
+    Nous pourrions integrer un mode simulation activable et désactivable qui
+    desactiverais ou activerais respectivement les temps d'attente et les
+    mises à jour d'affichage.
+    Cela nous forcerais a rendre notre objet de Game le plus optimisé
+    possible tout en evitant la duplication de code.
+    Cette solution semble la plus simple à implémenter et la plus efficace en
+    termes de maintenance.
+
+    \subsection{Approche utilisée}
+    \paragraph{Mode de simulation intégré}
+    Nous avons décidé d'utiliser un mode de simulation intégré, cela nous
+    semble la solution la plus pertinente et utile.
+    Cela nous permettra de se concentrer sur l'optimisation et la préparation
+    de notre IA détaillée plus bas plus longtemps.
+
+    \subsection{Remarques sur les résultats obtenus}
+
+    \paragraph{Code clair et compréhensif}
+    La séparation Jeu/simulation est claire et compréhensible dans la boucle
+    principale du jeu.
+    Les fonctions et variables sont courtes et au plus descriptif possible
+    afin de garder une compréhension facile des algorithmes mis en place.
+
+    \subsection{Pistes d'améliorations}
+
+    \paragraph{Aucune amélioration trouvée}
+    Le code me semble au plus efficace et optimisé tout en restant clair et
+    compréhensible.
+
+
+
+    \section{Gestion de la partie - Structure des données du jeu}
+
+    \subsection{Nécessités}
+
+    \paragraph{Représenter un graphe de serveurs}
+    Nous avons comme informations à stocker un graphe non-orienté, qui est
+    composé de noeuds et de liens, ainsi que les etats "infecté" ou non sur
+    chacun de ces noeuds.
+    Nous allons avoir besoin de modifier l'etat des noeuds et de couper des
+    liens spécifiques en pleine execution.
+
+    \subsection{Problème}
+
+    \paragraph{Un accès instantané aux informations}
+    Afin de pouvoir calculer facilement et rapidement les mouvements
+    possibles et à réaliser, nous allons avoir besoin d'un accès aux
+    informations au mieux instantané.
+    Malheureusement, un accès instantané peut aussi s'avérer couteux en
+    mémoire, et avec un nombre élevé de noeuds et de liens, la quantité de
+    mémoire occupée par un tel systeme d'acces peut s'averer problématique.
+
+    Comment allier rapidité de recherche avec efficacité de stockage en mémoire?
+
+    \subsection{Approches possibles}
+
+    \paragraph{}
+
+    \subsection{Approche utilisée}
+
+    \subsection{Remarques sur les résultats obtenus}
+
+    \subsection{Pistes d'amélioration}
+
+
+
+
+
+    \part{Interface Homme-Machine}
+    \section{}
+    \subsection{}
+    \paragraph{}
+
+    \part{Intelligence artificielle}
+
+    \part{Gestion de la partie}
+
+    \part{Bitch annexes}
+
+\end{document}

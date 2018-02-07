@@ -9,8 +9,8 @@ public enum GameSpeed {
 	SLOWER(1000);
 	
 	int step_duration;
-	
-	GameSpeed(int value) {
+
+    GameSpeed(int value) {
 		this.step_duration = value;
 	}
 }
