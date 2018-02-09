@@ -7,12 +7,7 @@ import SAD.Controls.Move.Protecc;
 import SAD.Game.Game;
 import SAD.Player.Player;
 
-import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
-import java.util.TreeSet;
-
-import static SAD.Controls.Move.Move.get_all_protecc;
 
 public class AI extends Player {
 
@@ -40,13 +35,13 @@ public class AI extends Player {
 
 		for(Move move : moves)
 		{
-			Game temp = s.clone();
-			temp.play_move(move);
-			MinmaxResult result = minmax(temp,d-1);
+			s.play_move(move);
+			MinmaxResult result = minmax(s, d - 1);
 			if(m.max < result.max){
 				m.max = result.max;
 				m.move = move;
 			}
+			s.revert_move(move);
 		}
 
 		return m;
@@ -54,7 +49,7 @@ public class AI extends Player {
 
 	public Attacc attacc(final Game game) {
 		game.start_simulation();
-		Attacc move = (Attacc) minmax(game.clone(), depth).move;
+		Attacc move = (Attacc) minmax(new Game(game), depth).move;
 		game.stop_simulation();
 		return (move != null)? move : new Attacc();
 		/*
@@ -78,7 +73,7 @@ public class AI extends Player {
 	
 	public Protecc protecc(final Game game) {
 		game.start_simulation();
-		Protecc move = (Protecc) minmax(game.clone(), depth).move;
+		Protecc move = (Protecc) minmax(new Game(game), depth).move;
 		game.stop_simulation();
 		return (move != null)? move: new Protecc();
 

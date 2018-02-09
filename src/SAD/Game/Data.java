@@ -20,13 +20,14 @@ public class Data {
 		this.infected_servers.put(false, new HashSet<>());
 	}
 
-	public Data(final Map<Integer, HashSet<Integer>> links, final Map<Boolean, HashSet<Integer>> infected_servers){
-		this.links = new HashMap<>();
+    public Data(Data d) {
+        this.links = new HashMap<>();
 		this.infected_servers = new HashMap<>();
-		this.links.putAll(links);
-		this.infected_servers.putAll(infected_servers);
-	}
-	
+        this.links.putAll(d.links);
+        this.infected_servers.putAll(d.infected_servers);
+    }
+
+
 	static Data load_predefined_map(final Integer index) {
 		Data map_data = new Data();
 		Random rand = new Random();
@@ -92,8 +93,14 @@ public class Data {
 		this.infected_servers.get(false).remove(server);
 		this.infected_servers.get(true).add(server);
 	}
-	
-	static Data load_random_map(final Integer server_quantity, final Integer link_probability, final Integer max_link_per_server) {
+
+
+    public void desinfect_server(final Integer server) {
+        this.infected_servers.get(true).remove(server);
+        this.infected_servers.get(false).add(server);
+    }
+
+    static Data load_random_map(final Integer server_quantity, final Integer link_probability, final Integer max_link_per_server) {
 		
 		Random rand = new Random();
 		Data map_data = new Data();
@@ -135,16 +142,16 @@ public class Data {
 	}
 	
 	public Set<Integer> get_neighbours(final Integer server) {
-		return (Set<Integer>) this.links.get(server).clone();
-	}
+        return this.links.get(server);
+    }
 	
 	public Integer get_max_infected_server_graph_size() {
-		return subgraph_size((Set<Integer>) this.infected_servers.get(true).clone());
-	}
+        return subgraph_size(this.infected_servers.get(true));
+    }
 	
 	public Integer get_max_uninfected_server_graph_size() {
-		return subgraph_size((Set<Integer>) this.infected_servers.get(false).clone());
-	}
+        return subgraph_size(this.infected_servers.get(false));
+    }
 	
 	public Integer subgraph_size(final Set<Integer> accepted_servers) {
 		if (accepted_servers.size() <= 1)
@@ -189,6 +196,12 @@ public class Data {
 		this.links.get(s1).add(s2);
 		this.links.get(s2).add(s1);
 	}
+
+    public void create_links(final Integer s, Set<Integer> servers) {
+        for (Integer s2 : servers)
+            create_link(s, s2);
+    }
+
 	
 	public Set<Integer> get_uninfected_neighbours(final Integer server) {
 		return get_uninfected_neighbours(new HashSet<Integer>() {{
@@ -198,14 +211,14 @@ public class Data {
 	
 	public Set<Integer> get_uninfected_neighbours(final Set<Integer> server) {
 		Set<Integer> result = get_neighbours(server);
-		result.removeAll((Collection<?>) this.infected_servers.get(true).clone());
-		return result;
+        result.removeAll(this.infected_servers.get(true));
+        return result;
 	}
 	
 	public Set<Integer> get_infected_neighbours(final Set<Integer> server) {
 		Set<Integer> result = get_neighbours(server);
-		result.removeAll((Collection<?>) this.infected_servers.get(false).clone());
-		return result;
+        result.removeAll(this.infected_servers.get(false));
+        return result;
 	}
 	
 	public Set<Integer> get_infected_neighbours(final Integer server) {
@@ -242,12 +255,12 @@ public class Data {
 	}
 	
 	public Set<Integer> get_infected_servers() {
-		return (Set<Integer>) this.infected_servers.get(true).clone();
-	}
+        return this.infected_servers.get(true);
+    }
 	
 	public Set<Integer> get_uninfected_servers() {
-		return (Set<Integer>) this.infected_servers.get(false).clone();
-	}
+        return this.infected_servers.get(false);
+    }
 	
 	public Set<Integer> get_neighbours(final Set<Integer> servers) {
 		Set<Integer> neighbours = new HashSet<>();
@@ -257,7 +270,4 @@ public class Data {
 		return neighbours;
 	}
 
-	public Data clone(){
-		return new Data(this.links, this.infected_servers);
-	}
 }

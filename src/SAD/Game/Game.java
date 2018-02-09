@@ -7,7 +7,6 @@ import SAD.GUI.GUI;
 import SAD.Player.Player;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 public class Game {
 	private static GameSpeed game_speed = GameSpeed.NORMAL;
@@ -32,13 +31,13 @@ public class Game {
 		game_speed = speed;
 	}
 
-	public Game(final Player attacker, final Player defender, final Data map, final Boolean is_attacker_turn, final Boolean has_ended, Boolean is_simulated){
-		this.attacker = attacker;
-		this.defender = defender;
-		this.map = map.clone();
-		this.is_attacker_turn = is_attacker_turn;
-		this.has_ended = has_ended;
-		this.is_simulated = is_simulated;
+	public Game(final Game g) {
+		this.attacker = g.attacker;
+		this.defender = g.defender;
+		this.map = new Data(g.map);
+		this.is_attacker_turn = g.is_attacker_turn;
+		this.has_ended = g.has_ended;
+		this.is_simulated = g.is_simulated;
 	}
 
 	public void start_simulation() {
@@ -96,9 +95,9 @@ public class Game {
 	private void next_turn() {
 		Move move;
 		if (this.is_attacker_turn)
-			move = this.attacker.attacc(this.clone());
+			move = this.attacker.attacc(new Game(this));
 		else
-			move = this.defender.protecc(this.clone());
+			move = this.defender.protecc(new Game(this));
 		play_move(move);
 	}
 
@@ -135,18 +134,49 @@ public class Game {
 		}
 		map.infect_server(target);
 	}
-	
+
+	public void revert_move(Move move) {
+
+		if (move.is_impossible()) {
+			// The game has ended!
+			this.has_ended = false;
+			return;
+		} else if ((move instanceof Protecc)) {
+			revert_move((Protecc) move);
+		} else {
+			revert_move((Attacc) move);
+		}
+		is_attacker_turn = !is_attacker_turn;
+	}
+
+	private void revert_move(Protecc move) {
+		final Integer server = move.get_server();
+		final Set<Integer> neighbours = move.get_links();
+		if (!this.is_simulated) {
+			GUI.cut_links(server, neighbours);
+			System.out.println("ISOLATING SERVER " + server + " FROM SERVERS " + neighbours);
+		}
+		map.create_links(server, neighbours);
+	}
+
+	private void revert_move(Attacc move) {
+		final Integer target = move.get_target();
+		if (!this.is_simulated) {
+			GUI.infect_node(target);
+			System.out.println("INFECTION OF COMPUTER " + target);
+		}
+		map.desinfect_server(target);
+	}
+
+
 	protected void sleep() {
 		try {
 			Thread.sleep(game_speed.step_duration);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		return;
 	}
 
-	public Game clone(){
-		return new Game(this.attacker, this.defender, this.map, this.is_attacker_turn, this.has_ended, this.is_simulated);
-	}
+
 }
 
