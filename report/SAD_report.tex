@@ -2,8 +2,40 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
-\usepackage[frenchb]{babel}
+\usepackage[french]{babel}
 \usepackage{multirow}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[allbordercolors=white]{hyperref}
+\usepackage{mdframed}
+
+\newmdenv[
+rightline=false,
+topline=false,
+bottomline=false,
+backgroundcolor=BurntOrange!5,
+fontcolor=BrickRed,
+linecolor=Red,
+linewidth=1pt]{problem}
+
+
+\newmdenv[
+rightline=false,
+topline=false,
+bottomline=false,
+backgroundcolor=ForestGreen!5,
+fontcolor=OliveGreen,
+linecolor=Green,
+linewidth=1pt]{result}
+
+
+\newmdenv[
+rightline=false,
+topline=false,
+bottomline=false,
+backgroundcolor=Cyan!5,
+fontcolor=Blue,
+linecolor=NavyBlue,
+linewidth=1pt]{info}
 
 %Page style
 
@@ -12,8 +44,9 @@
 \KOMAoption{headsepline}{true}
 \KOMAoption{footsepline}{true}
 \KOMAoption{twoside}{false}
-\KOMAoption{abstract}{true}
+\KOMAoption{abstract}{false}
 \KOMAoption{DIV}{calc}
+
 
 %Title page
 
@@ -52,10 +85,22 @@
         \item 21501666: Pinot Morine alias PINOTMorine
     \end{itemize}
 
+    \paragraph{Comment s'y retrouver?}
+    La table des matières commence à la seconde page et chaque élément de la
+    table est un lien cliquable pouvant vous menez où vous le souhaitez.
+
     \paragraph{Pourquoi un intitulé "SAD PROJECT"}
     Car l'anglais fait partie de notre langue de travail de tous les jours et
     les initiales de la matière Sécurité et Aide à la Décision se prêtent aux
     jeux de mots!
+
+    \begin{info}
+        Ce rapport se veut non-exhaustif concernant toutes les optimisations et
+        choix de design en faveur d'un volume plus court. Il est donc moins
+        fourni qu'initialement prévu! Si vous souhaitez une version plus
+        complète, n'hésitez pas à demander!
+    \end{info}
+
 
     \part{Fonctionnalités de base}
 
@@ -105,8 +150,10 @@
     laissant l'IA aller aussi vite que possible pour que sa recherche de
     mouvement soit la plus efficace et rapide possible.
 
-    Comment allier vitesse d'execution et comprehensibilité du jeu pour
-    l'utilisateur?
+    \begin{problem}
+        Comment allier vitesse d'execution et comprehensibilité du jeu pour
+        l'utilisateur?
+    \end{problem}
 
     \section{Approches possibles}
 
@@ -131,11 +178,17 @@
     termes de maintenance.
 
     \section{Approche utilisée}
+
+
     \paragraph{Mode de simulation intégré}
     Nous avons décidé d'utiliser un mode de simulation intégré, cela nous
     semble la solution la plus pertinente et utile.
-    Cela nous permettra de se concentrer sur l'optimisation et la préparation
-    de notre IA détaillée plus bas plus longtemps.
+
+    \begin{result}
+        Cela nous permettra de se concentrer sur l'optimisation et la préparation
+        de notre IA détaillée plus bas plus longtemps.
+    \end{result}
+
 
     \section{Remarques sur les résultats obtenus}
 
@@ -174,7 +227,9 @@
     mémoire, et avec un nombre élevé de noeuds et de liens, la quantité de
     mémoire occupée par un tel systeme d'acces peut s'averer problématique.
 
-    Comment allier rapidité de recherche avec efficacité de stockage en mémoire?
+    \begin{problem}
+        Comment allier rapidité de recherche avec efficacité de stockage en mémoire?
+    \end{problem}
 
     \section{Approches possibles}
 
@@ -235,19 +290,29 @@
 
     \paragraph{Ensembles d'états et liste d'ensemble de voisins}
     Nous finalement opté pour les ensembles d'états regroupés dans une
-    variable dictionnaire à 2 valeurs pour simplifier leur accès.
-    Cela nous as permis d'avoir acces instantanément à tous les serveurs
-    pertinents pour chaque tour de defenseur, et presque instantanément pour
-    l'attaquant.
-    De même, nous avons décidé d'utiliser les listes d'ensembles de voisins
-    pour pouvoir profiter des opérations de la théorie des ensembles pour
-    réaliser quelques optimisations en recherche de serveurs!
+    variable dictionnaire à 2 valeurs pour simplifier leur accès et profiter
+    des avantages de la manipulation d'ensembles.
 
+    \begin{result}
+        Cela nous as permis d'avoir acces instantanément à tous les serveurs
+        pertinents pour chaque tour de defenseur, et presque instantanément pour
+        l'attaquant.
+    \end{result}
 
+    \paragraph{Liste d'ensemble de voisins}
+    De même, nous avons décidé d'utiliser les listes d'ensembles de voisins,
+    afin de limiter les données aux plus cruciales: celles que l'on ne peut
+    pas déduire par logique.
+
+    \begin{result}
+        Cette approche nous as aussi servi pour pouvoir profiter des opérations de
+        la théorie des ensembles pour réaliser quelques optimisations en recherche
+        de serveurs!
+    \end{result}
 
     \section{Remarques sur les résultats obtenus}
 
-    \paragraph{Les ensembles, c'est la vie}
+    \paragraph{Les ensembles, c'est la vie!}
     L'utilisation d'ensembles s'est avérée etre une solution très élégante,
     pratique et necessitant peu de code, laissant peu de place à de
     potentielles erreurs et bugs.
@@ -261,9 +326,8 @@
     \section{Pistes d'améliorations}
 
     \paragraph{Aucune amélioration trouvée}
-    Après réflexions, nous n'avons pas trouvé de solution plus élégante ou
-    rapide ayant moins d'empreinte mémoire ou de plus de serieux avantages que
-    celle ci.
+    Après réflexion, nous n'avons pas trouvé de solution plus élégante ou
+    ayant de serieux avantages par rapport à celle ci.
 
 
     \part{Interface Homme-Machine}
@@ -291,6 +355,10 @@
     un effort de concentration qui ne devrait pas etre necessaire pour se
     representer l'état global de la situation.
 
+    \begin{problem}
+        Comment représenter de façon comprehensible les données de la partie?
+    \end{problem}
+
     \section{Approches possibles}
 
     \paragraph{Une représentation textuelle du graphe}
@@ -315,7 +383,14 @@
     De simples couleurs permettent de representer le niveau de danger des
     serveurs (infectés, infectable, protégés) et la reorganisation
     automatique des noeuds liés permet d'avoir une vision claire des
-    stratégies utilisées.
+    stratégies utilisées!
+
+    \begin{result}
+        Un court temps de développement dédié à cette interface à beaucoup
+        aidé la gestion des erreurs, voir les erreur arriver visuellement
+        aide à localiser les problèmes rapidement en plus de donner une
+        vision agréable du déroulement de la simulation.
+    \end{result}
 
     \part{Intelligence artificielle}
 
@@ -333,6 +408,10 @@
 
     \paragraph{Beaucoup de coups possibles}
 
+    \begin{problem}
+
+    \end{problem}
+
     \section{Approches possibles}
 
     \paragraph{Approche MinMax}
@@ -347,11 +426,19 @@
 
     \paragraph{Approche MinMax avec élagage AlphaBeta}
 
+    \begin{result}
+
+    \end{result}
+
     \section{Remarques sur les résultats obtenus}
 
     \paragraph{Relativement rapide à basse-profondeur}
 
     \section{Pistes d'amélioration}
+
+    \paragraph{Augmenter le nombre de coupes}
+
+    \paragraph{Rendre le code plus élégant avec NégaMax}
 
     \paragraph{Passer à Monte-Carlo}
 
@@ -367,6 +454,10 @@
 
     \paragraph{La valeur doit faire sens pour les deux camps}
 
+    \begin{problem}
+
+    \end{problem}
+
     \section{Approches possibles}
 
     \paragraph{Le plus grand réseau de serveurs non infectés}
@@ -379,6 +470,10 @@
 
     \paragraph{-- a determiner --}
 
+    \begin{result}
+
+    \end{result}
+
     \section{Remarques sur les résultats obtenus}
 
     \paragraph{-- a experimenter --}
@@ -386,5 +481,43 @@
     \section{Pistes d'amélioration}
 
     \paragraph{Utiliser une heuristique pondérée}
+
+
+    %% TEMPLATE pour chapitre
+
+    %\chapter{PARTIE}
+
+    %\section{Nécessités}
+
+    %\paragraph{}
+
+    %\section{Problème}
+
+    %\paragraph{}
+
+    %\begin{problem}
+
+    %\end{problem}
+
+    %\section{Approches possibles}
+
+    %\paragraph{}
+
+    %\section{Approche utilisée}
+
+    %\paragraph{}
+
+    %\begin{result}
+
+    %\end{result}
+
+    %\section{Remarques sur les résultats obtenus}
+
+    %\paragraph{}
+
+    %\section{Pistes d'amélioration}
+
+    %\paragraph{}
+
 
 \end{document}
