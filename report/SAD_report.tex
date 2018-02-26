@@ -1,54 +1,93 @@
-\documentclass{scratcl}
-
+\documentclass{scrreprt}
 
 \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[frenchb]{babel}
+\usepackage{multirow}
 
-\publisher{RAPPORT DE PROJET}
-\subtitle{2ème année de licence d'informatique}
-\title{SAD PROJECT}
-\author{PINOT Morine \& JACQUIOT Christopher}
+%Page style
+
+\pagestyle{headings}
+\pagenumbering{arabic}
+\KOMAoption{headsepline}{true}
+\KOMAoption{footsepline}{true}
+\KOMAoption{twoside}{false}
+\KOMAoption{abstract}{true}
+\KOMAoption{DIV}{calc}
+
+%Title page
+
+
+\titlehead{\centering {\Large \bfseries RAPPORT DE PROJET}\\
+\itshape{ 2ème année de licence d'informatique}}
+\subject{}
+\title{\Huge \bfseries SAD PROJECT}
+\author{Réalisé par \\Christopher JACQUIOT \& Morine PINOT}
+\date{}
+\publishers{\includegraphics[width=0.5\textwidth]{pics/logo_long.png}}
 
 \begin{document}
     \maketitle
     \tableofcontents
 
-    \section{Introduction}
+    \chapter{Introduction}
 
     \paragraph{Quel est ce projet?}
+    Le but de ce projet est d'expérimenter un peu en intelligence artificielle
+    par le biais d'un jeu d'infection de graphe.
+    Le principe de la simulation est simple, un attaquant et un defenseur
+    infectent et protègent respectivement des serveurs tour à tour.
+    Le but du défenseur est de garder le plus gros sous réseau de serveurs
+    non infectés possible tandis que l'attaquant doit veiller à ce qu'il n'en
+    reste pas grand chose en fin de partie.
 
 
+    \paragraph{Qui sommes nous?}
+    Nous sommes deux étudiants de L2 informatique en études à l'université de
+    Caen:\\
+
+
+    \begin{itemize}
+        \item 21501785: Jacquiot Christopher alias Helldragger
+        \item 21501666: Pinot Morine alias PINOTMorine
+    \end{itemize}
+
+    \paragraph{Pourquoi un intitulé "SAD PROJECT"}
+    Car l'anglais fait partie de notre langue de travail de tous les jours et
+    les initiales de la matière Sécurité et Aide à la Décision se prêtent aux
+    jeux de mots!
 
     \part{Fonctionnalités de base}
 
-    \section{Gestion de la partie - Structure des données du jeu}
+    %\chapter{Gestion de la partie - Structure des données du jeu}
 
-    \subsection{Nécessités}
+    %\section{Nécessités}
 
-    \paragraph{}
+    %\paragraph{}
 
-    \subsection{Problème}
+    %\section{Problème}
 
-    \subsection{Approches possibles}
+    %\section{Approches possibles}
 
-    \subsection{Approche utilisée}
+    %\section{Approche utilisée}
 
-    \subsection{Remarques sur les résultats obtenus}
+    %\section{Remarques sur les résultats obtenus}
 
-    \subsection{Pistes d'amélioration}
-
-
-
-    Simulation mode
-    Affichage du jeu
-    Generation de map
-    Heuristique de l'IA
-    Algorithme de l'IA
+    %\section{Pistes d'amélioration}
 
 
 
-    \section{Gestion de la partie - Simulation des mouvements}
+    %Simulation mode
+    %Affichage du jeu
+    %Generation de map
+    %Heuristique de l'IA
+    %Algorithme de l'IA
 
-    \subsection{Nécessités}
+
+
+    \chapter{Gestion de la partie - Simulation des mouvements}
+
+    \section{Nécessités}
 
     \paragraph{Gestion des parties simulable}
     Afin de pouvoir utiliser pleinement notre algorithme min max pour
@@ -56,7 +95,7 @@
     un maximum l'impact d'un tour de jeu en temps de calcul pour laisser plus
     de temps au calcul du meilleur mouvement.
 
-    \subsection{Problème}
+    \section{Problème}
 
     \paragraph{L'utilisateur doit pouvoir comprendre ce qu'il se passe}
     Avoir un tour de jeu quasi instantané est gênant quand il s'agit de
@@ -69,7 +108,7 @@
     Comment allier vitesse d'execution et comprehensibilité du jeu pour
     l'utilisateur?
 
-    \subsection{Approches possibles}
+    \section{Approches possibles}
 
     \paragraph{Deux gestion de parties séparées}
     Nous pourrions avoir deux types d'objet Game séparés, l'un
@@ -91,22 +130,22 @@
     Cette solution semble la plus simple à implémenter et la plus efficace en
     termes de maintenance.
 
-    \subsection{Approche utilisée}
+    \section{Approche utilisée}
     \paragraph{Mode de simulation intégré}
     Nous avons décidé d'utiliser un mode de simulation intégré, cela nous
     semble la solution la plus pertinente et utile.
     Cela nous permettra de se concentrer sur l'optimisation et la préparation
     de notre IA détaillée plus bas plus longtemps.
 
-    \subsection{Remarques sur les résultats obtenus}
+    \section{Remarques sur les résultats obtenus}
 
     \paragraph{Code clair et compréhensif}
-    La séparation Jeu/simulation est claire et compréhensible dans la boucle
+    La séparation Jeu/simulation est claire et visible dans la boucle
     principale du jeu.
     Les fonctions et variables sont courtes et au plus descriptif possible
     afin de garder une compréhension facile des algorithmes mis en place.
 
-    \subsection{Pistes d'améliorations}
+    \section{Pistes d'améliorations}
 
     \paragraph{Aucune amélioration trouvée}
     Le code me semble au plus efficace et optimisé tout en restant clair et
@@ -114,9 +153,9 @@
 
 
 
-    \section{Gestion de la partie - Structure des données du jeu}
+    \chapter{Gestion de la partie - Structure des données du jeu}
 
-    \subsection{Nécessités}
+    \section{Nécessités}
 
     \paragraph{Représenter un graphe de serveurs}
     Nous avons comme informations à stocker un graphe non-orienté, qui est
@@ -125,7 +164,7 @@
     Nous allons avoir besoin de modifier l'etat des noeuds et de couper des
     liens spécifiques en pleine execution.
 
-    \subsection{Problème}
+    \section{Problème}
 
     \paragraph{Un accès instantané aux informations}
     Afin de pouvoir calculer facilement et rapidement les mouvements
@@ -137,29 +176,215 @@
 
     Comment allier rapidité de recherche avec efficacité de stockage en mémoire?
 
-    \subsection{Approches possibles}
+    \section{Approches possibles}
 
-    \paragraph{}
+    \paragraph{Une liste d'états avec une case par serveur}
+    Ceci semble la solution la plus naturelle, une liste des etats de chaque
+    serveur possible.
+    C'est aussi une solution relativement facile à
+    comprendre, l'index dans la liste representant le numero du serveur,
+    l'accès à l'etat d'un serveur particulier est instantané.
 
-    \subsection{Approche utilisée}
+    Le problème avec cette approche est lorsque nous avons besoin de
+    determiner les ensembles de serveurs infectés ou non pour determiner un
+    nombre de serveurs potentiels jouables pour une IA.
+    Cela demande de parcourir alors n serveurs juste pour determiner les
+    serveurs possibles, ce qui peut faire beaucoup d'iterations inutiles en
+    debut de jeu par exemple.
 
-    \subsection{Remarques sur les résultats obtenus}
 
-    \subsection{Pistes d'amélioration}
+    \paragraph{Deux ensembles d'etats contenant les serveurs appropriés}
+    Cette solution est plus abstraite mais aussi plus interessante: l'etat de
+    chacun de nos serveurs ne peut être que infecté (true) ou non infecté
+    (false).
+
+    Cela nous permet de prendre le problème a l'envers: au lieu de lier les
+    serveurs à leur état, lions les états à des ensembles de serveurs.
+    Cela apporte plusieurs avantages vis a vis de la liste, comme la
+    récupération instantanée de tous les serveurs jouables par un defenseur,
+    l'impossibilité d'avoir de doublons indésirables parmi un ensemble de
+    serveurs et amène à diverses simplifications concernant le choix au
+    hasard de serveurs ou la determination des serveurs infectables.
+
+    Cette solution utilisée par le biais de HashSet permettrais d'avoir une
+    complexité constante pour l'utilisation de nos données d'état.
 
 
 
+    \paragraph{Une matrice d'adjacence}
+    Pour representer nos liens nous pourrions créer une matrice d'adjacence,
+    cela permet d'avoir un acces instantané à la vérification que deux
+    serveurs sont bien liées ou non.
+    Temps de recherche constant en tête, cela veut aussi dire garder en
+    mémoire tous les liens qui n'existent pas: sur n serveurs nous
+    aurions $n^{2}$ valeurs à mémoriser, le coût en mémoire et en
+    temps d'écriture au démarrage est donc relativement élevé.
+
+    \paragraph{Une liste d'ensemble de serveurs voisins}
+    Une autre approche moins rapide sur certaines recherches mais plus économe
+    en mémoire serais de ne conserver que les liens existant par serveur par
+    le biais d'une liste d'ensembles de voisins.
+    Cette fois ci nous ne conserverions que les informations cruciales,
+    economisant ainsi de la mémoire, et le temps de recherche reste
+    acceptable, un hashset ayant un temps de recherche constant pour un
+    element dans le cas général.
+
+
+    \section{Approche utilisée}
+
+
+    \paragraph{Ensembles d'états et liste d'ensemble de voisins}
+    Nous finalement opté pour les ensembles d'états regroupés dans une
+    variable dictionnaire à 2 valeurs pour simplifier leur accès.
+    Cela nous as permis d'avoir acces instantanément à tous les serveurs
+    pertinents pour chaque tour de defenseur, et presque instantanément pour
+    l'attaquant.
+    De même, nous avons décidé d'utiliser les listes d'ensembles de voisins
+    pour pouvoir profiter des opérations de la théorie des ensembles pour
+    réaliser quelques optimisations en recherche de serveurs!
+
+
+
+    \section{Remarques sur les résultats obtenus}
+
+    \paragraph{Les ensembles, c'est la vie}
+    L'utilisation d'ensembles s'est avérée etre une solution très élégante,
+    pratique et necessitant peu de code, laissant peu de place à de
+    potentielles erreurs et bugs.
+    De plus, la théorie des ensemble est très agréable à utiliser pour
+    certaines de nos fonctions comme la recuperation des serveurs
+    infectables, etant juste l'ensemble de serveurs non infectés ET voisins
+    de serveurs infectés, l'impossibilité de doublons nous permet aussi a
+    cette étape de regrouper tous les voisins non infectés de tous les serveurs
+    infectés dans un seul petit ensemble lisible par un humain.
+
+    \section{Pistes d'améliorations}
+
+    \paragraph{Aucune amélioration trouvée}
+    Après réflexions, nous n'avons pas trouvé de solution plus élégante ou
+    rapide ayant moins d'empreinte mémoire ou de plus de serieux avantages que
+    celle ci.
 
 
     \part{Interface Homme-Machine}
-    \section{}
-    \subsection{}
-    \paragraph{}
+    \chapter{Représentation visuelle d'un graphe}
+    \section{Nécessités}
+
+    \paragraph{Voir les bugs}
+    Afin de pouvoir aisément trouver d'eventuels bugs et erreurs de logique,
+    nous avons besoin d'avoir un moyen de se representer clairement et
+    comprehensivement les données d'une simulation à chaque étape de la
+    simulation.
+
+
+    \paragraph{Observer divers comportements}
+    Afin de pouvoir comparer diverses priorités et divers comportements
+    possibles de notre intelligence artificielle, il nous faut aussi pouvoir
+    observer en direct les choix et les tendances adoptées par celle ci.
+
+    \section{Problème}
+
+    \paragraph{Des données difficiles à visualiser de tête}
+    L'un des majeurs soucis avec la représentation d'un graphe sous forme de
+    données est la visualisation humaine de ces données.
+    Donner les informations brutes de liens des serveurs et des etats demande
+    un effort de concentration qui ne devrait pas etre necessaire pour se
+    representer l'état global de la situation.
+
+    \section{Approches possibles}
+
+    \paragraph{Une représentation textuelle du graphe}
+    Il serait possible de representer graphiquement le graphe sous forme de
+    texte, cela en revanche necessiterais de limiter le nombre de liens à 3
+    ou 4 par serveur pour garder le graphe possible.
+    Cela nous demanderais en revanche de nous concentrer un peu trop sur
+    la creation de cette interface graphique optionnelle.
+
+    \paragraph{Une représentation graphique par librairie}
+    Il serait aussi possible de faire appel à des librairies open-source de
+    rendu de graphes, afin de ne pas être limité au niveau de nos données.
+    Cela nous permettrais aussi de nous concentrer sur l'IA plutot que sur la
+    creation d'une interface.
+
+    \section{Approche utilisée}
+
+    \paragraph{Une représentation graphique par librairie}
+    Nous avons au final opté pour la solution rapide, afin de nous concentrer
+    sur l'essentiel du projet et avons utilisé graphstream pour pouvoir voir
+    le deroulement de nos parties en temps réel.
+    De simples couleurs permettent de representer le niveau de danger des
+    serveurs (infectés, infectable, protégés) et la reorganisation
+    automatique des noeuds liés permet d'avoir une vision claire des
+    stratégies utilisées.
 
     \part{Intelligence artificielle}
 
-    \part{Gestion de la partie}
+    \chapter{Algorithme de décision}
 
-    \part{Bitch annexes}
+    \section{Nécessités}
+
+    \paragraph{Determiner le meilleur coup possible}
+
+    \paragraph{Le determiner rapidement}
+
+    \section{Problème}
+
+    \paragraph{Jeu à informations complètes}
+
+    \paragraph{Beaucoup de coups possibles}
+
+    \section{Approches possibles}
+
+    \paragraph{Approche MinMax}
+
+    \paragraph{Approche NégaMax}
+
+    \paragraph{Elagage AlphaBeta}
+
+    \paragraph{Elagage Monte-Carlo}
+
+    \section{Approche utilisée}
+
+    \paragraph{Approche MinMax avec élagage AlphaBeta}
+
+    \section{Remarques sur les résultats obtenus}
+
+    \paragraph{Relativement rapide à basse-profondeur}
+
+    \section{Pistes d'amélioration}
+
+    \paragraph{Passer à Monte-Carlo}
+
+    \chapter{Heuristique}
+
+    \section{Nécessités}
+
+    \paragraph{Determiner une valeur intelligente}
+
+    \paragraph{La determiner rapidement}
+
+    \section{Problème}
+
+    \paragraph{La valeur doit faire sens pour les deux camps}
+
+    \section{Approches possibles}
+
+    \paragraph{Le plus grand réseau de serveurs non infectés}
+
+    \paragraph{Le nombre de serveurs non infectés}
+
+    \paragraph{Le nombre de serveurs infectables}
+
+    \section{Approche utilisée}
+
+    \paragraph{-- a determiner --}
+
+    \section{Remarques sur les résultats obtenus}
+
+    \paragraph{-- a experimenter --}
+
+    \section{Pistes d'amélioration}
+
+    \paragraph{Utiliser une heuristique pondérée}
 
 \end{document}
