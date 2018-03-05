@@ -7,6 +7,8 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage[allbordercolors=white]{hyperref}
 \usepackage{mdframed}
+\usepackage{pgfplotstable}
+\usepackage{tikz-3dplot}
 \usepackage[OT1]{fontenc}
 
 \usepackage[bottom=2cm,footskip=8mm]{geometry}
@@ -513,8 +515,121 @@ linewidth=1pt]{info}
 
     \part{Expérimentations}
 
-    \chapter{}
+    \chapter{Comparaison MinMax X AlphaBeta}
 
+    \paragraph{Quelques conditions de départ}
+    Afin d'avoir des résultats scientifiquement utilisable ou un minimum
+    accurate, nous allons nous fixer quelques conditions initiales communes à
+    chacunes de ces expériences, comme la quantité de serveurs, et le nombre
+    de serveurs infectés initialement.
+    De même, la profondeur de nos IA attaquantes et défenseur seront
+    considérées identiques tout le long des expérimentations.
+    De plus, comme la génération de nos maps sont aléatoire, il risque d'y
+    avoir une variance peu négligeable entre les resultats de deux
+    expériences similaires, pour pallier à cela, nous allons donc répeter 100
+    fois chaque expérience pour moyenner les resultats et avoir un indice de
+    confiance de 95\% et une marge d'erreur de 10\% sur nos résultats.
+    100 répétitions pour chaque expériences venant avec le coût d'une
+    simulation couteuse en temps et en calculs, nous allons utiliser des
+    paramètres communs initiaux réduits avec 1 serveur infecté et 6 serveurs
+    au total.
+
+    \begin{info}
+        Chacun de ces paramètres est modifiable par le biais de son flag
+        respectif. Plus d'informations avec la commande -h/--help.
+    \end{info}
+
+    \section{Profondeur de recherche}
+
+    \paragraph{Une croissance exponentielle}
+    En premier lieu, nous nous attendions à une croissance exponentielle du
+    nombre de noeuds explorés en fonction de la profondeur maximale explorée
+    par notre IA, et nous nous attendions aussi à efficacité accrue d'alpha
+    beta par rapport à Min Max sur la quantité totale de noeuds explorés.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{data/GraphDepthMM.png}
+        \includegraphics[width=\textwidth]{data/GraphDepthAB.png}
+        \caption{Comparaison des performances entre Min Max et Alpha Beta en
+        fonction de la profondeur de recherche}
+    \end{figure}
+
+    \paragraph{Une réduction impressionnante}
+    Comme prévu, la forme de nos courbes correspondent à nos attentes.
+    En revanche, nous avons été surpris de constater une diminution d'un
+    facteur 10 du nombre total de noeuds explorés, passant de 40000 pour min max
+    à 4000 pour Alpha Beta! Wow!
+
+    \begin{result}
+        AlphaBeta est plus efficace d'une facteur 10 par rapport à Min Max
+        par rapport à la profondeur de recherche dans notre cas!
+    \end{result}
+
+    \section{Probabilités de liaison}
+
+    \paragraph{Sans attentes particulières}
+    Le defenseur et l'attaquant n'ayant pas de réel changement sur leur
+    recherche face a un nombre plus élevé de liaisons, avec si peu de noeuds
+    disponibles, 6 en l'occurrence, nous ne nous attendions pas à beaucoup de
+    variation
+    particulière.
+    En revanche, sur un nombre plus élevé de serveurs où les liens seraient
+    plus prolifiques, nous devrions constater aussi une augmentation plus
+    exponentielle de la quantité de noeuds explorés.
+    Nous nous attendions en revanche à avoir un total de noeuds explorés
+    moindre pour Alpha Beta que pour MinMax, dû aux coupures nombreuses.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{data/GraphLinkMM.png}
+        \includegraphics[width=\textwidth]{data/GraphLinkAB.png}
+        \caption{Comparaison des performances entre Min Max et Alpha Beta en
+        fonction de la probabilité de liaisons entre deux serveurs}
+    \end{figure}
+
+    \paragraph{Des résultats qui collent à nos attentes}
+    Nous pouvons effectivement constater une diminution importante du nombre
+    total de noeuds exploré entre MinMax et AlphaBeta, comme attendu.
+    De même, nous avons une variance assez importante sur nos résultats avec
+    aucune tendance claire qui ne se degage, ce que nous devrions pouvoir
+    expliquer avec le manque de serveurs dans nos échantillons tests.
+
+    \begin{result}
+        L'efficacité d'AlphaBeta en nombre total de noeuds explorés est en
+        revanche incontestée avec une reduction d'un facteur 5 par rapport à
+        MinMax!
+
+    \end{result}
+
+    \section{Conclusions}
+
+    \paragraph{Un plus grand échantillonnage}
+    Nous pourrions utiliser un plus grand échantillonnage pour faire diminuer
+    nos marges d'erreurs et atteindre des résultats plus précis.
+    Ceci nous aiderait a determiner de potentielles tendances dans des
+    graphes pas forcément très clairs comme celui de probabilités qui
+    semblait linéaire pour AlphaBeta et en cloche pour Min Max.
+
+    \paragraph{Expérimenter avec des facteurs différents}
+    Comme remarqué plusieurs fois, nos conditions de départ sont un peu
+    limite, nous avons bien trop peu de serveurs pour avoir des resultats
+    décisifs sur des facteurs tels que l'importance du nombre de serveurs
+    infectés ou la probabilité de liens entre deux serveurs.
+    Augmenter le nombre de serveurs pourrait s'averer couteux en temps de
+    simulation mais interessant pour améliorer nos résultats et vérifier si on
+    peut les généraliser.
+
+    \paragraph{D'autres outils pourraient être utilisés}
+    Depuis le début nous optimisons notre code source pour accélérer le
+    déroulement d'une partie en général, ce qui as jusqu'ici relativement
+    bien marché.
+    Cependant, quand nous avons une centaine de simulations similaires à
+    examiner indépendamment, il deviendrais interessant de se pencher sur le
+    parallélisme afin de répartir la charge et réduire notre temps de
+    simulation.
+    Ce genre d'optimisation pourrait être viable et interessant à implémenter
+    pour de prochains projets similaires.
     %% TEMPLATE pour chapitre
 
     %\chapter{PARTIE}

@@ -19,6 +19,10 @@ public class Stats {
 	
 	public static void analyze_pruning(int server_qty, int link_prob, int infected) {
 		String filename_header = server_qty + "servers_" + infected + "infected_";
+		String filename_min_depth = filename_header + "minmax_depth_pruning_analysis.dat";
+		String filename_ab_depth = filename_header + "alphabeta_depth_pruning_analysis.dat";
+		String filename_min_link = filename_header + "minmax_link_prob_pruning_analysis.dat";
+		String filename_ab_link = filename_header + "alphabeta_link_prob_pruning_analysis.dat";
 		
 		
 		System.out.println("PRUNING ANALYSIS, MINMAX  X  ALPHABETA PRUNING \n");
@@ -45,7 +49,7 @@ public class Stats {
 		data_format.add("total");
 		data_format.add("total_err");
 		
-		Out.log_stats(filename_header + "minmax_" + "depth_pruning_analysis.dat", data_format);
+		Out.log_stats(filename_min_depth, data_format);
 		data_format.clear();
 		//no alphabeta first
 		for (int depth = 1; depth <= 5; depth++) {
@@ -59,10 +63,10 @@ public class Stats {
 			data_format.add(String.valueOf(data.get("total")));
 			data_format.add(String.valueOf(data.get("total") * 0.1));
 			
-			Out.log_stats(filename_header + "minmax_" + "depth_pruning_analysis.dat", data_format);
+			Out.log_stats(filename_min_depth, data_format);
 			data_format.clear();
 		}
-		System.out.println("END OF ANALYSIS, RESULTS LOGGED INTO " + filename_header + "minmax_" + "depth_pruning_analysis.dat");
+		System.out.println("END OF ANALYSIS, RESULTS LOGGED INTO " + filename_min_depth);
 		
 		data_format.add("depth");
 		data_format.add("attacker");
@@ -72,7 +76,7 @@ public class Stats {
 		data_format.add("total");
 		data_format.add("total_err");
 		
-		Out.log_stats(filename_header + "alphabeta_" + "depth_pruning_analysis.dat", data_format);
+		Out.log_stats(filename_ab_depth, data_format);
 		data_format.clear();
 		//now alphabeta
 		for (int depth = 1; depth <= 5; depth++) {
@@ -86,10 +90,10 @@ public class Stats {
 			data_format.add(String.valueOf(data.get("total")));
 			data_format.add(String.valueOf(data.get("total") * 0.1));
 			
-			Out.log_stats(filename_header + "alphabeta_" + "depth_pruning_analysis.dat", data_format);
+			Out.log_stats(filename_ab_depth, data_format);
 			data_format.clear();
 		}
-		System.out.println("END OF ANALYSIS, RESULTS LOGGED INTO " + filename_header + "alphabeta_" + "depth_pruning_analysis.dat");
+		System.out.println("END OF ANALYSIS, RESULTS LOGGED INTO " + filename_ab_depth);
 		
 		// second analysis: let's compare link probability at a reasonable depth of 3!
 		int depth = 3;
@@ -106,7 +110,7 @@ public class Stats {
 		data_format.add("total");
 		data_format.add("total_err");
 		
-		Out.log_stats(filename_header + "minmax_" + "link_prob_pruning_analysis.dat", data_format);
+		Out.log_stats(filename_min_link, data_format);
 		data_format.clear();
 		
 		
@@ -121,11 +125,11 @@ public class Stats {
 			data_format.add(String.valueOf(data.get("total")));
 			data_format.add(String.valueOf(data.get("total") * 0.1));
 			
-			Out.log_stats(filename_header + "minmax_" + "link_prob_pruning_analysis.dat", data_format);
+			Out.log_stats(filename_min_link, data_format);
 			data_format.clear();
 		}
 		
-		System.out.println("END OF ANALYSIS, RESULTS LOGGED INTO " + filename_header + "minmax_" + "link_prob_pruning_analysis.dat");
+		System.out.println("END OF ANALYSIS, RESULTS LOGGED INTO " + filename_min_link);
 		data_format.add("link_prob");
 		data_format.add("attacker");
 		data_format.add("attacker_err");
@@ -134,7 +138,7 @@ public class Stats {
 		data_format.add("total");
 		data_format.add("total_err");
 		
-		Out.log_stats(filename_header + "alphabeta_" + "link_prob_pruning_analysis.dat", data_format);
+		Out.log_stats(filename_ab_link, data_format);
 		data_format.clear();
 		
 		for (int prob = 5; prob <= 95; prob = prob + 10) {
@@ -148,11 +152,11 @@ public class Stats {
 			data_format.add(String.valueOf(data.get("total")));
 			data_format.add(String.valueOf(data.get("total") * 0.1));
 			
-			Out.log_stats(filename_header + "alphabeta_" + "link_prob_pruning_analysis.dat", data_format);
+			Out.log_stats(filename_ab_link, data_format);
 			data_format.clear();
 		}
 		
-		System.out.println("END OF ANALYSIS, RESULTS LOGGED INTO " + filename_header + "alphabeta_" + "link_prob_pruning_analysis.dat");
+		System.out.println("END OF ANALYSIS, RESULTS LOGGED INTO " + filename_ab_link);
 		
 	}
 	
