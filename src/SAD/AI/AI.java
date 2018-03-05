@@ -1,18 +1,17 @@
-package SAD.Player.AI;
+package SAD.AI;
 
 
 import SAD.Game.Game;
 import SAD.Move.Attacc;
 import SAD.Move.Move;
 import SAD.Move.Protecc;
-import SAD.Player.Player;
 
 import java.util.Set;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-public class AI extends Player {
+public class AI {
 	
 	public static int attacker_depth = 5;
 	public static int defender_depth = 5;
@@ -30,6 +29,8 @@ public class AI extends Player {
 		if (d == 0 || s.has_ended) {
 			return new MinmaxResult(getValue(s), null);
 		}
+		
+		
 		MinmaxResult best;
 		Set<Move> moves;
 		
@@ -38,6 +39,9 @@ public class AI extends Player {
 			moves = Move.get_all_attacc(s);
 			best = new MinmaxResult(999999, new Attacc());
 			for (Move move : moves) {
+				
+				s.explored_nodes_attacker++;
+				
 				s.play_move(move);
 				MinmaxResult result = alphabeta(s, d - 1, alpha, beta);
 				if (result.score < best.score | best.score == 999999) {
@@ -56,7 +60,9 @@ public class AI extends Player {
 			moves = Move.get_all_protecc(s);
 			best = new MinmaxResult(-999999, new Protecc());
 			for (Move move : moves) {
+				s.explored_nodes_defender++;
 				s.play_move(move);
+				
 				MinmaxResult result = alphabeta(s, d - 1, alpha, beta);
 				
 				if (result.score > best.score | best.score == -999999) {
@@ -87,6 +93,8 @@ public class AI extends Player {
 			moves = Move.get_all_attacc(s);
 			best = new MinmaxResult(999999, new Attacc());
 			for (Move move : moves) {
+				s.explored_nodes_attacker++;
+
 				s.play_move(move);
 				MinmaxResult result = minmax(s, d - 1);
 				if (result.score < best.score | best.score == 999999) {
@@ -101,6 +109,8 @@ public class AI extends Player {
 			moves = Move.get_all_protecc(s);
 			best = new MinmaxResult(-999999, new Protecc());
 			for (Move move : moves) {
+				s.explored_nodes_defender++;
+
 				s.play_move(move);
 				MinmaxResult result = minmax(s, d - 1);
 				
@@ -127,29 +137,29 @@ public class AI extends Player {
 		use_alphabeta = ab;
 	}
 	
-	public Attacc attacc(final Game game) {
+	public static Attacc attacc(final Game game) {
 		
 		Attacc move;
 		game.start_simulation();
 		
 		if (use_alphabeta)
-			move = (Attacc) alphabeta(new Game(game), attacker_depth, 0, game.map.get_servers_count()).move;
+			move = (Attacc) alphabeta(game, attacker_depth, 0, game.map.get_servers_count()).move;
 		else
-			move = (Attacc) minmax(new Game(game), attacker_depth).move;
+			move = (Attacc) minmax(game, attacker_depth).move;
 		
 		game.stop_simulation();
 		return (move != null)? move : new Attacc();
 		
 	}
 	
-	public Protecc protecc(final Game game) {
+	public static Protecc protecc(final Game game) {
 		
 		Protecc move;
 		game.start_simulation();
 		if (use_alphabeta)
-			move = (Protecc) alphabeta(new Game(game), defender_depth, 0, game.map.get_servers_count()).move;
+			move = (Protecc) alphabeta(game, defender_depth, 0, game.map.get_servers_count()).move;
 		else
-			move = (Protecc) minmax(new Game(game), defender_depth).move;
+			move = (Protecc) minmax(game, defender_depth).move;
 		game.stop_simulation();
 		return (move != null)? move: new Protecc();
 

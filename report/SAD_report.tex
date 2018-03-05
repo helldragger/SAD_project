@@ -7,6 +7,9 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage[allbordercolors=white]{hyperref}
 \usepackage{mdframed}
+\usepackage[OT1]{fontenc}
+
+\usepackage[bottom=2cm,footskip=8mm]{geometry}
 
 \newmdenv[
 rightline=false,
@@ -45,7 +48,7 @@ linewidth=1pt]{info}
 \KOMAoption{footsepline}{true}
 \KOMAoption{twoside}{false}
 \KOMAoption{abstract}{false}
-\KOMAoption{DIV}{calc}
+\KOMAoption{DIV}{10}
 
 
 %Title page
@@ -98,7 +101,7 @@ linewidth=1pt]{info}
         Ce rapport se veut non-exhaustif concernant toutes les optimisations et
         choix de design en faveur d'un volume plus court. Il est donc moins
         fourni qu'initialement prévu! Si vous souhaitez une version plus
-        complète, n'hésitez pas à demander!
+        complète, n'hésitez pas à demander plus de détails!
     \end{info}
 
 
@@ -228,7 +231,7 @@ linewidth=1pt]{info}
     mémoire occupée par un tel systeme d'acces peut s'averer problématique.
 
     \begin{problem}
-        Comment allier rapidité de recherche avec efficacité de stockage en mémoire?
+        Comment allier rapidité de recherche et efficacité de stockage?
     \end{problem}
 
     \section{Approches possibles}
@@ -323,11 +326,6 @@ linewidth=1pt]{info}
     cette étape de regrouper tous les voisins non infectés de tous les serveurs
     infectés dans un seul petit ensemble lisible par un humain.
 
-    \section{Pistes d'améliorations}
-
-    \paragraph{Aucune amélioration trouvée}
-    Après réflexion, nous n'avons pas trouvé de solution plus élégante ou
-    ayant de serieux avantages par rapport à celle ci.
 
 
     \part{Interface Homme-Machine}
@@ -399,89 +397,123 @@ linewidth=1pt]{info}
     \section{Nécessités}
 
     \paragraph{Determiner le meilleur coup possible}
+    Afin de gagner, nos IA doivent trouver les coups qui les avantageraient
+    le plus par rapport à leur adversaire.
+    Seulement, cela demande à l'IA de se projeter dans le futur de la partie
+    et de voir ce qui pourrait se passer en conséquence de chacune de ses
+    actions.
+    Et le problème, c'est qu'il y en as beaucoup de possible apres chaque
+    autre action...
 
     \paragraph{Le determiner rapidement}
+    Afin de pouvoir voir la fin de la simulation de notre vivant, il va donc
+    falloir trouver le meileur choix possible aussi vite que possible.
+    Et aller vite implique de ne pas forcément tout explorer!
 
     \section{Problème}
 
     \paragraph{Jeu à informations complètes}
+    L'intêret et la malédiction avec ce type de jeu, c'est qu'il
+    est à information complète.
+    C'est à dire que toutes les informations sont constamment disponible,
+    rendant de ce fait une exploration possible des coups jouable totalement
+    déterministe!
+    Avec suffisamment de temps, nous pourrions explorer chacunes des suites
+    de mouvements possibles du debut à toutes les fins potentielles de la
+    partie pour determiner une potentielle stratégie gagnante...
 
     \paragraph{Beaucoup de coups possibles}
+    Mais le problème se pose dans la quantité de chemins possibles.
+    Pour déterminer la valeur d'un coup il nous faut voir où il peut mener,
+    seulement, chaque coup donne une quantité conséquente de nouveaux coups à
+    parcourir, et ce à chaque coup parcouru!
+    La quantité de temps nécessaire pour tout parcourir deviens très vite
+    exponentiel pour un jeu de ce genre..
 
     \begin{problem}
-
+        Comment donc éviter de perdre trop de temps à trouver une solution
+        "suffisante"?
     \end{problem}
 
     \section{Approches possibles}
 
     \paragraph{Approche MinMax}
+    Nous pourrions utiliser l'approche minmax, avec une profondeur de coups
+    découvert limités.
+    L'avantage de cette approche est sa simplicité: nous parcourrons toutes
+    les possibilités de chaque coup possible jusqu'à un certain point, en
+    considerant que l'adversaire joue toujours parfaitement pour determiner
+    la valeur de notre prochain coup.
+    Le désavantage en revanche, est que nous parcourrons quand meme toutes
+    les possibilités engendrées par chaque coup, ce qui ralentis la recherche
+    considerablement à profondeur élevée.
 
     \paragraph{Approche NégaMax}
+    Cette solution est l'équivalente à minmax sauf en un point: L'élégance du
+    pseudocode.
+    Là où min max nécessite de dupliquer son code afin d'alterner entre
+    fonctions minimum et maximum, ici nous pourrions tirer parti du fait que
+    le minimum de deux nombres positif est equivalent au maximum de ces memes
+    nombres au négatif, et ainsi retirer les fonctions minimum en alternant
+    juste le signe des scores évalués.
+    Ce qui rends quand meme plus propre!
 
     \paragraph{Elagage AlphaBeta}
+    Le probleme avec les deux solutions au dessus est le fait d'explorer
+    TOUTES les solutions possibles, incluant des coups risqués, mais surtout
+    beaucoup de coups potentiellement inutiles, au prix de précieux temps de
+    calcul.
+    L'élagage alpha beta tends à regler ce probleme en ajoutant des
+    conditions selon lesquelles tel ou tel arbre de possibilités pourrait
+    être ignoré par la recherche, pour se focaliser sur de plus prometteurs.
+    L'avantage de cet élagage est qu'il est relativement simple à comprendre:
+    Ne pas continuer à explorer si un meilleur chemin potentiel a déjà été
+    trouvé, au risque d'ignorer des solutions au premier abord risquées mais
+    stratégiquement gagnantes cachées parmi beaucoup de mauvais choix possibles.
+    De plus il est facilement améliorable en reglant alpha et beta plus
+    finement pour tirer de meilleurs gains de performances de cet algorithme.
+    Son seul véritable désavantage à ma connaissance en revanche, c'est qu'il
+    y a mieux...
 
     \paragraph{Elagage Monte-Carlo}
+    Il y a mieux que alpha-beta.
+    Il y a Monte-Carlo.
+    Le concept est plus abstrait à comprendre, les maths derriere sont aussi
+    plus complexes, mais aussi superbes et nettement plus élégantes que les
+    force brutes dont on parlais jusqu'à présent.
+    Le principe est pourtant simple, si nous tirions toujours à l'aléatoire
+    parmi un ensemble de possibilités, sur un temps infini, nous finirions
+    par éventuellement avoir exploré toutes les possibilités qui y existent!
+    Le résultat de ce genre d'approche revenant donc au résultat d'un min max
+    sans devoir analyser branche par branche les resultats de chaque choix!
+    L'avantage de cette solution est clair: Au lieu de se focaliser sur tous
+    les resultats possibles d'un choix, choisissons un sous ensemble
+    aléatoire parmi nos choix, puis un nouveau sous ensemble parmi les
+    nouveaux choix possibles, etc etc; cela nous permet d'explorer beaucoup
+    plus loin dans le déroulement de la partie sans perdre trop de temps, et
+    ainsi de se focaliser sur les conséquences sur un futur plus lointain de la
+    partie que de se focaliser sur les conséquences immédiates de notre coup!
+    L'unique problème de cette solution est qu'on n'est pas censé s'en servir
+    ou meme pouvoir l'utiliser pour ce TP, ce qui est tout de même super
+    triste..
 
     \section{Approche utilisée}
 
     \paragraph{Approche MinMax avec élagage AlphaBeta}
+    Nous avons au final opté pour une solution classique, le MinMax avec
+    élagage Alpha-Beta.
+    Bien que n'étant ni particulièrement élégante ou optimisée, cela nous as
+    permis de faire de légères modifications aisément pour expérimenter
+    quelques modifications.
 
     \begin{result}
-
+        C'est une solution à la fois simple à implémenter et assez modulaire
+        pour permettre des experiences sans trop le rendre illisible.
     \end{result}
 
-    \section{Remarques sur les résultats obtenus}
+    \part{Expérimentations}
 
-    \paragraph{Relativement rapide à basse-profondeur}
-
-    \section{Pistes d'amélioration}
-
-    \paragraph{Augmenter le nombre de coupes}
-
-    \paragraph{Rendre le code plus élégant avec NégaMax}
-
-    \paragraph{Passer à Monte-Carlo}
-
-    \chapter{Heuristique}
-
-    \section{Nécessités}
-
-    \paragraph{Determiner une valeur intelligente}
-
-    \paragraph{La determiner rapidement}
-
-    \section{Problème}
-
-    \paragraph{La valeur doit faire sens pour les deux camps}
-
-    \begin{problem}
-
-    \end{problem}
-
-    \section{Approches possibles}
-
-    \paragraph{Le plus grand réseau de serveurs non infectés}
-
-    \paragraph{Le nombre de serveurs non infectés}
-
-    \paragraph{Le nombre de serveurs infectables}
-
-    \section{Approche utilisée}
-
-    \paragraph{-- a determiner --}
-
-    \begin{result}
-
-    \end{result}
-
-    \section{Remarques sur les résultats obtenus}
-
-    \paragraph{-- a experimenter --}
-
-    \section{Pistes d'amélioration}
-
-    \paragraph{Utiliser une heuristique pondérée}
-
+    \chapter{}
 
     %% TEMPLATE pour chapitre
 

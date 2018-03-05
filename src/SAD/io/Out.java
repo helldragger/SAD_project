@@ -2,12 +2,33 @@ package SAD.io;
 
 import SAD.Game.Data;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 public abstract class Out {
 	
 	//TODO Stats logging?
+	
+	public static void log_stats(String filename, List<String> data) {
+		
+		try (PrintWriter log = new PrintWriter(new BufferedWriter(new FileWriter(filename, true)))) {
+			for (String stat : data) {
+				System.out.print(stat + "\t");
+				log.print(stat + '\t');
+			}
+			
+			System.out.println();
+			log.println();
+		} catch (IOException e) {
+		
+		} finally {
+		}
+		
+	}
 	
 	
 	public static void print_servers(final Data map) {

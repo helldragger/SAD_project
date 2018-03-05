@@ -5,12 +5,13 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.ui.view.Viewer;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 public class GUI {
 	static Graph graph = new SingleGraph("Game");
+	static Viewer viewer = null;
 
 
 	static public void load_graph(Game game) {
@@ -44,7 +45,8 @@ public class GUI {
 						"}");
 		graph.addAttribute("ui.quality");
 		graph.addAttribute("ui.antialias");
-		graph.display();
+		if (viewer == null)
+			viewer = graph.display();
 		
 		//loading nodes
 		for (Integer server : game.map.get_all_servers()) {

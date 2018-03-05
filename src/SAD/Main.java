@@ -1,19 +1,18 @@
 package SAD;
 
+import SAD.AI.AI;
 import SAD.Game.Game;
 import SAD.Game.GameSpeed;
-import SAD.Player.AI.AI;
-import SAD.Player.Player;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
 		
 		
-		int server_qty = 20;
+		int server_qty = 6;
 		int infected = 1;
-		int probability = 10;
+		int probability = 5;
 		boolean preset = false;
-		
+		boolean science = false;
 		
 		String help = "VALID FLAGS (n designate an integer) :\n" +
 				"AI RELATED\n" +
@@ -29,7 +28,8 @@ public class Main {
 				format_flag_command("v", "verbose", "Disable the GUI and switch to a text-only representation") +
 				format_num_command("u", "update", Game.game_speed.get_index(), "Change the GUI update speed. Slowest:1 Fastest:6") +
 				"MISC\n" +
-				format_flag_command("h", "help", "Display this message and exits the program");
+				format_flag_command("h", "help", "Display this message and exits the program") +
+				format_flag_command("x", "", "Starts an in-depth analysis between minmax and alphabeta. Take into account above options. (WARNING: CPU INTENSIVE AND TIME COMSUMING)");
 		
 		
 		for (int i = 0; i < args.length; i++) {
@@ -84,7 +84,9 @@ public class Main {
 					Game.game_speed = GameSpeed.from_index(Integer.valueOf(args[i]));
 					break;
 				// OTHER
-				
+				case "-x":
+					science = true;
+					break;
 				default:
 					System.out.println("ERROR: " + args[i] + " is not a valid option\n");
 				case "-h":
@@ -94,6 +96,10 @@ public class Main {
 			}
 		}
 		
+		if (science) {
+			Stats.analyze_pruning(6, 5, 1);
+			return;
+		}
 		if (probability > 100 | probability < 0)
 			throw new Exception("Probability must be between 0 and 100");
 		if (server_qty < 1)
@@ -101,14 +107,11 @@ public class Main {
 		if (infected < 1)
 			throw new Exception("Quantity of starting infected servers must be >= 1");
 		
-		Player atk = new AI();
-		Player def = new AI();
-		
 		Game game;
 		if (preset)
-			game = new Game(atk, def, 1);
+			game = new Game(1);
 		else
-			game = new Game(atk, def, server_qty, probability, infected);
+			game = new Game(server_qty, probability, infected);
 		
 		//run the game 'til the end of it.
 		game.run();
