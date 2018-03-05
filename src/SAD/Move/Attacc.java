@@ -1,4 +1,4 @@
-package SAD.Controls.Move;
+package SAD.Move;
 
 public class Attacc extends Move {
 	Integer target;
@@ -15,7 +15,7 @@ public class Attacc extends Move {
 		return this.target;
 	}
 	
-	public boolean is_impossible() {
+	public boolean is_empty() {
 		return (this.target == -1);
 	}
 	

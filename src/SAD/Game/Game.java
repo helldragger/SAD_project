@@ -1,15 +1,16 @@
 package SAD.Game;
 
-import SAD.Controls.Move.Attacc;
-import SAD.Controls.Move.Move;
-import SAD.Controls.Move.Protecc;
 import SAD.GUI.GUI;
+import SAD.Move.Attacc;
+import SAD.Move.Move;
+import SAD.Move.Protecc;
 import SAD.Player.Player;
 
 import java.util.Set;
 
 public class Game {
-	private static GameSpeed game_speed = GameSpeed.NORMAL;
+	public static boolean verbose = false;
+	public static GameSpeed game_speed = GameSpeed.NORMAL;
 	private final Player attacker;
 	private final Player defender;
 	public Data map;
@@ -17,18 +18,16 @@ public class Game {
 	public Boolean has_ended = false;
 	public Boolean is_simulated = false;
 	
-	public Game(final Player attacker, final Player defender, final int server_qty, final int probability, final int max_links, final GameSpeed speed) {
+	public Game(final Player attacker, final Player defender, final int server_qty, final int probability, final int infected) {
 		this.attacker = attacker;
 		this.defender = defender;
-		this.map = Data.load_random_map(server_qty, probability, max_links);
-		game_speed = speed;
+		this.map = Data.load_random_map(server_qty, probability, infected);
 	}
 	
-	public Game(final Player attacker, final Player defender, final int preset, final GameSpeed speed) {
+	public Game(final Player attacker, final Player defender, final int preset) {
 		this.attacker = attacker;
 		this.defender = defender;
 		this.map = Data.load_predefined_map(preset);
-		game_speed = speed;
 	}
 
 	public Game(final Game g) {
@@ -48,14 +47,17 @@ public class Game {
 		is_simulated = false;
 	}
 	
-	public void run() {
+	public void run() throws InterruptedException {
 		//present the board.
-		SAD.io.Out.print_servers(this.map);
+		if (verbose)
+			SAD.io.Out.print_servers(this.map);
+		else {
+			GUI.load_graph(this);
+			Thread.sleep(1500);
+		}
 		
 		//let's rumbleeeeee
 		game_loop();
-		
-		//TODO implement a result screen for the attacker and the defender
 		
 		Integer infected_servers = this.map.get_infected_servers().size();
 		Integer uninfected_servers = this.map.get_uninfected_servers().size();
@@ -82,9 +84,13 @@ public class Game {
 	
 	private void game_loop() {
 		while (!this.has_ended) {
+			
+			has_ended = (Move.get_all_attacc(this).isEmpty()
+					| Move.get_all_protecc(this).isEmpty());
 			next_turn();
 			if (!this.is_simulated) {
-				SAD.io.Out.print_servers(this.map);
+				if (verbose)
+					SAD.io.Out.print_servers(this.map);
 				sleep();
 			}
 			
@@ -93,51 +99,76 @@ public class Game {
 	}
 	
 	private void next_turn() {
+		if (has_ended)
+			return;
 		Move move;
 		if (this.is_attacker_turn)
-			move = this.attacker.attacc(new Game(this));
+			move = this.attacker.attacc(this);
 		else
-			move = this.defender.protecc(new Game(this));
+			move = this.defender.protecc(this);
 		play_move(move);
 	}
 
 	public void play_move(Move move){
-		if (move.is_impossible()) {
-			// The game has ended!
-			this.has_ended = true;
-			return;
-		}
-
-		else if ((move instanceof Protecc)) {
+		is_attacker_turn = !is_attacker_turn;
+		
+		
+		if ((move instanceof Protecc)) {
 			play_move((Protecc) move);
 		} else {
 			play_move((Attacc) move);
 		}
-		is_attacker_turn = !is_attacker_turn;
+		
 	}
 
 	private void play_move(Protecc move){
+		if (Move.get_all_protecc(this).isEmpty()) {
+			if (!this.is_simulated)
+				System.out.println("DEFENDER CANNOT PLAY");
+			return;
+		}
+		else if (move.is_empty()) {
+			if (!this.is_simulated)
+				System.out.println("DEFENDER CHOOSES TO DO NOTHING");
+			return;
+		}
+		
 		final Integer server = move.get_server();
 		final Set<Integer> neighbours = move.get_links();
 		if (!this.is_simulated) {
-			GUI.cut_links(server, neighbours);
-			System.out.println("ISOLATING SERVER " + server + " FROM SERVERS " + neighbours);
+			if (!verbose)
+				GUI.cut_links(server, neighbours);
+			System.out.println("DEFENDER ISOLATE SERVER " + server + " FROM SERVERS " + neighbours);
 		}
 		map.cut_links(server, neighbours);
 	}
 
 	private void play_move(Attacc move){
+		
+		if (Move.get_all_attacc(this).isEmpty()) {
+			if (!this.is_simulated)
+				System.out.println("ATTACKER CANNOT PLAY");
+			return;
+		}
+		else if (move.is_empty()) {
+			if (!this.is_simulated)
+				System.out.println("ATTACKER CHOOSES TO DO NOTHING");
+			return;
+		}
+		
 		final Integer target =  move.get_target();
 		if (!this.is_simulated) {
-			GUI.infect_node(target);
+			if (!verbose)
+				GUI.infect_node(target);
 			System.out.println("INFECTION OF COMPUTER " + target);
 		}
 		map.infect_server(target);
 	}
 
 	public void revert_move(Move move) {
-
-		if (move.is_impossible()) {
+		is_attacker_turn = !is_attacker_turn;
+		
+		if (move.is_empty()) {
 			// The game has ended!
 			this.has_ended = false;
 			return;
@@ -146,14 +177,14 @@ public class Game {
 		} else {
 			revert_move((Attacc) move);
 		}
-		is_attacker_turn = !is_attacker_turn;
 	}
 
 	private void revert_move(Protecc move) {
 		final Integer server = move.get_server();
 		final Set<Integer> neighbours = move.get_links();
 		if (!this.is_simulated) {
-			GUI.cut_links(server, neighbours);
+			if (!verbose)
+				GUI.cut_links(server, neighbours);
 			System.out.println("ISOLATING SERVER " + server + " FROM SERVERS " + neighbours);
 		}
 		map.create_links(server, neighbours);
@@ -162,7 +193,8 @@ public class Game {
 	private void revert_move(Attacc move) {
 		final Integer target = move.get_target();
 		if (!this.is_simulated) {
-			GUI.infect_node(target);
+			if (!verbose)
+				GUI.infect_node(target);
 			System.out.println("INFECTION OF COMPUTER " + target);
 		}
 		map.desinfect_server(target);

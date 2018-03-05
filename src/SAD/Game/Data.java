@@ -99,8 +99,8 @@ public class Data {
         this.infected_servers.get(true).remove(server);
         this.infected_servers.get(false).add(server);
     }
-
-    static Data load_random_map(final Integer server_quantity, final Integer link_probability, final Integer max_link_per_server) {
+	
+	static Data load_random_map(final int server_quantity, final int link_probability, final int infected_quantity) {
 		
 		Random rand = new Random();
 		Data map_data = new Data();
@@ -117,25 +117,16 @@ public class Data {
 		
 		//linking servers
 		
-		for (int server = 0; server < server_quantity; server++)
-		// To get a somewhat random link distribution we will pick the other linked server at random.
-		{
-			for (int attempt = map_data.links.get(server).size(); attempt < max_link_per_server; attempt++)
-			// if we do have to create a link, we will accept it only if the other server does accept any more connexions
-			//it avoids doing a risky infinite loop and helps speeding up the process
-			{
+		for (int server_i = 0; server_i < server_quantity; server_i++)
+			for (int server_j = server_i + 1; server_j < server_quantity; server_j++)
 				if (rand.nextInt() <= link_probability)
-				//we pick a random server.
-				{
-					Integer target = rand.nextInt(server_quantity);
-					if (map_data.get_neighbours(target).size() < max_link_per_server & server != target)
-						map_data.create_link(server, target);
-				}
-			}
-		}
+					map_data.create_link(server_i, server_j);
+				
 		
 		//patient zero
-		map_data.infect_server(rand.nextInt(server_quantity));
+		for (int _ = 0; _ < infected_quantity; _++) {
+			map_data.infect_server(rand.nextInt(map_data.get_uninfected_servers().size()));
+		}
 		
 		//ready!
 		return map_data;

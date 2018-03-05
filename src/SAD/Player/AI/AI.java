@@ -1,109 +1,166 @@
 package SAD.Player.AI;
 
 
-import SAD.Controls.Move.Attacc;
-import SAD.Controls.Move.Move;
-import SAD.Controls.Move.Protecc;
 import SAD.Game.Game;
+import SAD.Move.Attacc;
+import SAD.Move.Move;
+import SAD.Move.Protecc;
 import SAD.Player.Player;
 
 import java.util.Set;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 public class AI extends Player {
-
-	private int depth = 3;
-
-	private static Integer getValue(final Game s){
-		if(s.is_attacker_turn){ //if Player is Attacc
-			return s.map.get_max_infected_server_graph_size();
-		}else{
-			return s.map.get_max_uninfected_server_graph_size();
+	
+	public static int attacker_depth = 5;
+	public static int defender_depth = 5;
+	static boolean use_alphabeta = false;
+	
+	private static int getValue(final Game s) {
+		int sum = 0;
+		for (Integer server : s.map.get_uninfected_servers()) {
+			sum += s.map.get_neighbours(server).size();
 		}
+		return sum;
 	}
-
-	public static MinmaxResult minmax(final Game s, final Integer d){
-		if(d ==0 || s.has_ended){
+	
+	public static MinmaxResult alphabeta(final Game s, final Integer d, int alpha, int beta) {
+		if (d == 0 || s.has_ended) {
 			return new MinmaxResult(getValue(s), null);
 		}
-		MinmaxResult m = new MinmaxResult(0, null);
-
+		MinmaxResult best;
 		Set<Move> moves;
-		if (s.is_attacker_turn)
-			moves = Move.get_all_attacc(s);
-		else
-			moves = Move.get_all_protecc(s);
-
-		for(Move move : moves)
-		{
-			s.play_move(move);
-			MinmaxResult result = minmax(s, d - 1);
-			if(m.max < result.max){
-				m.max = result.max;
-				m.move = move;
-			}
-			s.revert_move(move);
-		}
-
-		return m;
-	}
-
-	public Attacc attacc(final Game game) {
-		game.start_simulation();
-		Attacc move = (Attacc) minmax(new Game(game), depth).move;
-		game.stop_simulation();
-		return (move != null)? move : new Attacc();
-		/*
-		//TODO Add a real attack decision
-
-		// For the time being we just attack a random neighbor until we can't
 		
-		Set<Integer> potential_target = game.map.get_uninfected_neighbours(game.map.get_infected_servers());
-		// no targets to infect anymore
-		if (potential_target.isEmpty())
-			return new Attacc();
-			//targets to infect,, we choose one randomly
-		else {
-			Integer target_i = new Random().nextInt(potential_target.size());
-			return new Attacc((Integer) potential_target.toArray()[target_i]);
+		if (s.is_attacker_turn) { // min
+			
+			moves = Move.get_all_attacc(s);
+			best = new MinmaxResult(999999, new Attacc());
+			for (Move move : moves) {
+				s.play_move(move);
+				MinmaxResult result = alphabeta(s, d - 1, alpha, beta);
+				if (result.score < best.score | best.score == 999999) {
+					best.score = result.score;
+					best.move = move;
+				}
+				s.revert_move(move);
+				if (alpha >= best.score) {
+					return best;
+				}
+				beta = min(beta, best.score);
+			}
 			
 		}
-		*/
+		else { // max
+			moves = Move.get_all_protecc(s);
+			best = new MinmaxResult(-999999, new Protecc());
+			for (Move move : moves) {
+				s.play_move(move);
+				MinmaxResult result = alphabeta(s, d - 1, alpha, beta);
+				
+				if (result.score > best.score | best.score == -999999) {
+					best.score = result.score;
+					best.move = move;
+				}
+				s.revert_move(move);
+				if (best.score >= beta) {
+					return best;
+				}
+				
+				alpha = max(alpha, best.score);
+			}
+		}
+		return best;
+	}
+	
+	public static MinmaxResult minmax(final Game s, final Integer d){
+		if (d == 0 || s.has_ended) {
+			return new MinmaxResult(getValue(s), null);
+		}
+		MinmaxResult best;
+		
+		Set<Move> moves;
+		
+		if (s.is_attacker_turn) { // min
+			
+			moves = Move.get_all_attacc(s);
+			best = new MinmaxResult(999999, new Attacc());
+			for (Move move : moves) {
+				s.play_move(move);
+				MinmaxResult result = minmax(s, d - 1);
+				if (result.score < best.score | best.score == 999999) {
+					best.score = result.score;
+					best.move = move;
+				}
+				s.revert_move(move);
+			}
+			
+		}
+		else { // max
+			moves = Move.get_all_protecc(s);
+			best = new MinmaxResult(-999999, new Protecc());
+			for (Move move : moves) {
+				s.play_move(move);
+				MinmaxResult result = minmax(s, d - 1);
+				
+				if (result.score > best.score | best.score == -999999) {
+					best.score = result.score;
+					best.move = move;
+				}
+				s.revert_move(move);
+				
+			}
+		}
+		return best;
+	}
+	
+	static public void set_defender_depth(int d) {
+		defender_depth = d;
+	}
+	
+	static public void set_attacker_depth(int d) {
+		attacker_depth = d;
+	}
+	
+	static public void set_alphabeta(boolean ab) {
+		use_alphabeta = ab;
+	}
+	
+	public Attacc attacc(final Game game) {
+		
+		Attacc move;
+		game.start_simulation();
+		
+		if (use_alphabeta)
+			move = (Attacc) alphabeta(new Game(game), attacker_depth, 0, game.map.get_servers_count()).move;
+		else
+			move = (Attacc) minmax(new Game(game), attacker_depth).move;
+		
+		game.stop_simulation();
+		return (move != null)? move : new Attacc();
 		
 	}
 	
 	public Protecc protecc(final Game game) {
+		
+		Protecc move;
 		game.start_simulation();
-		Protecc move = (Protecc) minmax(new Game(game), depth).move;
+		if (use_alphabeta)
+			move = (Protecc) alphabeta(new Game(game), defender_depth, 0, game.map.get_servers_count()).move;
+		else
+			move = (Protecc) minmax(new Game(game), defender_depth).move;
 		game.stop_simulation();
 		return (move != null)? move: new Protecc();
 
-		/*
-		//TODO Add a real AI to determine what to protect or not
-		// for the time being, we will just cut links from a random infected server neighbour
-		
-		Set<Integer> potential_risk = game.map.get_uninfected_neighbours(game.map.get_infected_servers());
-		// no more infected neighbours connected to the servers?
-		if (potential_risk.isEmpty())
-			return new Protecc();
-			// risk to mitigate, let's disconnect something randomly!
-		else {
-			
-			Integer target_i = new Random().nextInt(potential_risk.size());
-			Integer server = (Integer) potential_risk.toArray()[target_i];
-			Set<Integer> risks_to_cut = game.map.get_infected_neighbours(server);
-			
-			return new Protecc(server, risks_to_cut);
-		}*/
-		
 	}
-
-
+	
 	static class MinmaxResult{
-		public Integer max;
+		public Integer score;
 		public Move move;
 
 		public MinmaxResult(Integer m, Move e){
-			max = m;
+			score = m;
 			move = e;
 		}
 	}

@@ -1,8 +1,8 @@
 package SAD.Player;
 
-import SAD.Controls.Move.Attacc;
-import SAD.Controls.Move.Protecc;
 import SAD.Game.Game;
+import SAD.Move.Attacc;
+import SAD.Move.Protecc;
 
 public abstract class Player {
 	

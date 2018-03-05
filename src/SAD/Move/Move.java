@@ -1,4 +1,4 @@
-package SAD.Controls.Move;
+package SAD.Move;
 
 import SAD.Game.Game;
 
@@ -6,12 +6,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public abstract class Move {
-	abstract public boolean is_impossible();
-
 	public static Set<Move> get_all_protecc(Game g){
 		Set<Move> all_move = new HashSet<>();
-
-		for(Integer s : g.map.get_all_servers()){
+		
+		for (Integer s : g.map.get_uninfected_servers()) {
 			Set<Set<Integer>> combinaison = powerset(g.map.get_neighbours(s));
 			for(Set<Integer> links : combinaison){
 				all_move.add(new Protecc(s,links));
@@ -19,7 +17,8 @@ public abstract class Move {
 		}
 		return all_move;
 	}
-
+	
+	
 	//Rosetta Code
 	public static Set<Set<Integer>> powerset(Set<Integer> list_links) {
 		Set<Set<Integer>> combinaison = new HashSet<Set<Integer>>();
@@ -51,4 +50,6 @@ public abstract class Move {
 			moves.add(new Attacc(t));
 		return moves;
 	}
+	
+	abstract public boolean is_empty();
 }

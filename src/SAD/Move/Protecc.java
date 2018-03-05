@@ -1,5 +1,6 @@
-package SAD.Controls.Move;
+package SAD.Move;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Protecc extends Move {
@@ -8,7 +9,7 @@ public class Protecc extends Move {
 	final Set<Integer> links_to_cut;
 	
 	public Protecc() {
-		this(-1, null);
+		this(-1, new HashSet<>());
 	}
 	
 	public Protecc(final Integer server, final Set<Integer> links) {
@@ -24,7 +25,7 @@ public class Protecc extends Move {
 		return this.links_to_cut;
 	}
 	
-	public boolean is_impossible() {
-		return (this.server == -1);
+	public boolean is_empty() {
+		return links_to_cut.isEmpty();
 	}
 }
